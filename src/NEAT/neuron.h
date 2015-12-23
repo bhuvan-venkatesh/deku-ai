@@ -3,11 +3,16 @@
 
 #include "gene.h"
 #include <vector>
+#include <unordered_map>
+#include <cstdint>
 
 using std::vector;
+using std::uint32_t;
 struct Neuron{
-	vector<gene> incoming;
+	vector<Gene> incoming;
 	double weight;
+
+	double sigmoid(const double& x) const;
 
 	Neuron(): weight(0) {};
 	Neuron(const Neuron& other) = default;

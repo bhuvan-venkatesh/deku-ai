@@ -17,6 +17,11 @@ public:
 	Gene(Gene&& rhs) = default;
 	Gene& operator=(const Gene& rhs) = default;
 	Gene& operator=(Gene&& rhs) = default;
+
+	bool operator<(const Gene& rhs)
+	{
+		return out < rhs.out;
+	}
 private:
 	//BI
 };
