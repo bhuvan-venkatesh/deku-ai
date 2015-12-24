@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <vector>
 #include "Genome.h"
-
+#define crossover 0.75,
 using std::uint32_t;
-
+using std::std::vector;
 struct Species{
 public:
 	uint32_t top_fitness;
@@ -18,6 +18,13 @@ public:
 	Species(Species&& other) = default;
 	Species& operator= (const Species& other) = default;
 	Species& operator= (Species&& other) = default;
+
+	bool operator< (const Species& other) const{
+		return average_fitness < other.average_fitness;
+	}
+
+	void calculate_average_fitness();
+	Genome breed_child();
 private:
 };
 
