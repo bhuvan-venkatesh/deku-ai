@@ -10,7 +10,6 @@
 #define delta_disjoint 2.0
 #define delta_weights 0.4
 #define delta_threshold 1.0
-#define population 300
 #define stale_species 15
 
 

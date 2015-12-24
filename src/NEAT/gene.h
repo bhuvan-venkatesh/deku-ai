@@ -25,7 +25,7 @@ public:
 	}
 
 	bool operator==(const Gene& rhs) const{
-		return innovation = rhs.innovation;
+		return innovation == rhs.innovation;
 	}
 private:
 	//BI

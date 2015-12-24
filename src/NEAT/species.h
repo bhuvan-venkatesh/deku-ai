@@ -2,10 +2,10 @@
 #define SPECIES_H
 #include <cstdint>
 #include <vector>
-#include "Genome.h"
+#include "genome.h"
 #define crossover 0.75,
 using std::uint32_t;
-using std::std::vector;
+using std::vector;
 struct Species{
 public:
 	uint32_t top_fitness;
