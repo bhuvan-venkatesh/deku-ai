@@ -10,3 +10,8 @@ Comments, issues, and ideas are all warmly welcomed!
 Note: The distribution is not ubuntu centered but the sh file in the root directory outlines
 the packages needed. OpenCV is needed as well as the dependencies at the bottom to run another open source
 screen capturing software.
+
+
+As the project gets bigger there will need to be a shift to more folders and a build automation system
+but just to get the process rolling and to have a working application, I forewent all of that and even
+build testing so far. Retroactively these will be added as well as autohell or cmake will be endured.
