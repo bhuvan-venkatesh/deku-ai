@@ -1,3 +1,12 @@
-//BI simply means that it was intentionally left blank
-This is not an error, just a means of checking TODOs
-or some form of incompetence
+An open source combination of computer vision, computer listening, and machine learning to play old NES games well. 
+The original source code started off as a port from SethBlings MarI/O but turned into a working project. 
+The way this works is that there is a screen recording module that takes each of the frames and puts it through an image analyzer to get a feature vector 
+then in turn going to a neural network to decide on the button mapping to press which then goes to a non-portable module to force key presses. 
+The idea behind the original NES games was that those games needed very little Natural Language Processing (Which is in some sort of NP-nonsense) so users 
+(much like the computer) had to figure out for themselves how to play and succeed at the game with very little internet. 
+There are good controls to this experiment and any significant improvements warrant production of a technical paper. 
+Comments, issues, and ideas are all warmly welcomed!
+
+Note: The distribution is not ubuntu centered but the sh file in the root directory outlines
+the packages needed. OpenCV is needed as well as the dependencies at the bottom to run another open source
+screen capturing software.
