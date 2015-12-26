@@ -15,12 +15,12 @@ Eye::Eye(){
 }
 std::vector<KeyPoint> Eye::analyze_screen(){
     cairo_surface_t* x11_surf = cairo_xlib_surface_create(disp, root, DefaultVisual(disp, scr), width, height);
-    cairo_surface_t* img_surf = paint_image_surface(x11_surf);
+    cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf);
     cv::Mat img_1 = convert_image_surface_to_mat(img_surf);
-    vector<Keypoints> points = analyze_keypoints(img_1);
+    vector<KeyPoint> points = analyze_keypoints(img_1);
     if(draw_keypoints){
-
-        drawKeypoints( img_1, keypoints_1, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
+        cv::Mat img_keypoints_1;
+        drawKeypoints( img_1, points, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
         imshow("Keypoints 1", img_keypoints_1 );
         waitKey(0);
 
@@ -30,7 +30,7 @@ std::vector<KeyPoint> Eye::analyze_screen(){
     cairo_surface_destroy(img_surf);
     x11_surf = NULL;
     img_surf = NULL;
-    return keypoints_1;
+    return points;
 }
 
 cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf){
@@ -49,8 +49,7 @@ cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf){
     unsigned char* ptr = cairo_image_surface_get_data(img_surf);
     
     if(!ptr){
-        cout<<"ERROR";
-        return -1;
+        cout<<"ERROR ptr is bad";
     };
     //cairo_surface_write_to_png(img_surf,"test.png");
 

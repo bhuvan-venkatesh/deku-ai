@@ -1,17 +1,20 @@
 #include "pool.h"
-Pool::innovation = 0;
+#include <algorithm>
 
-Pool(uint32_t outputs): 
+uint32_t Pool::innovation = 0;
+
+Pool::Pool(uint32_t inputs_, uint32_t outputs_):
 	generation(0),
 	current_species(1),
 	current_genome(1),
 	current_frame(0),
-	max_fitness(0)
-	innovation(outputs){
+	max_fitness(0),
+	inputs(inputs_),
+	outputs(outputs_){
 		//BI
 }
-uint32_t innovate(){
-	return ++pool.innovation;
+uint32_t Pool::innovate(){
+	return ++Pool::innovation;
 }
 
 void Pool::rank_globally(){
@@ -19,9 +22,9 @@ void Pool::rank_globally(){
 		Will not be changed and you cannot use references in templates*/
 
 	vector<Genome*> global;
-	for(auto species = species.begin(); species != species.end(); ++species){
-		for(auto genome = species.genomes.begin(); genome != species.genomes.end(); ++genome){
-			global.push_back(&(*i));
+	for(auto s = species.begin(); s != species.end(); ++s){
+		for(auto genome = s->genomes.begin(); genome != s->genomes.end(); ++genome){
+			global.push_back(&(*genome));
 		}
 	}
 	std::sort(global.begin(), global.end(), [](Genome* a, Genome* b){
@@ -35,7 +38,7 @@ void Pool::rank_globally(){
 uint32_t Pool::calculate_average_fitness(){
 	uint32_t total = 0;
 	for(auto s = species.begin(); s != species.end(); ++s){
-		total += species.average_fitness();
+		total += s->average_fitness;
 	}
 	return total;
 }
@@ -56,15 +59,15 @@ void Pool::remove_stale_species(){
 	rank_globally();
 	for(uint32_t i = 0; i < species.size(); ++i){
 		Species& s = species[i];
-		std::sort(s->genomes.begin(), s->genomes.end(), std::greater<Genome>());
-		if(s->genomes[0].fitness > s->top_fitness){
-			s->top_fitness = s->genomes[0].fitness;
-			s->staleness = 0;
+		std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
+		if(s.genomes[0].fitness > s.top_fitness){
+			s.top_fitness = s.genomes[0].fitness;
+			s.staleness = 0;
 		}
 		else
-			s->staleness++;
-		if(s->staleness > stale_species && s->top_fitness <= max_fitness){
-			std::erase(std::remove(species.begin(), species.end(), s), species.end());
+			s.staleness++;
+		if(s.staleness > stale_species && s.top_fitness <= max_fitness){
+			species.erase(std::find(species.begin(), species.end(), s));
 			--i;
 		}
 	}
@@ -75,9 +78,9 @@ void Pool::remove_weak_species(){
 	auto sum = calculate_average_fitness();
 	for(uint32_t i = 0; i < species.size(); ++i){
 		Species& s= species[i];
-		int32_t breed = int(species.average_fitness / sum * population);
+		int32_t breed = int(s.average_fitness / sum * population);
 		if(breed < 1){
-			std::erase(std::remove(species.begin(), species.end(), s), species.end());
+			species.erase(std::find(species.begin(), species.end(), s));
 			--i;
 		}
 	}
@@ -88,15 +91,15 @@ void Pool::add_to_species(const Genome& child){
 	bool found_species = false;
 	for(auto i = species.begin(); i != species.end() && !found_species; ++i){
 		if(child.same_species(i->genomes[0])){
-			species.genomes.push_back(child);
+			i->genomes.push_back(child);
 			found_species = true;
 		}
 	}
 
 	if(!found_species){
-		Species child;
-		child.genomes.push_back(child);
-		species.push_back(child);
+		Species childe(inputs, outputs);
+		childe.genomes.push_back(child);
+		species.push_back(childe);
 	}
 }
 
@@ -106,15 +109,15 @@ void Pool::new_generation(){
 	remove_stale_species();
 	rank_globally();
 	for(auto s = species.begin(); s != species.end(); ++s){
-		s.calculate_average_fitness();
+		s->calculate_average_fitness();
 	}
 	remove_weak_species();
 	uint32_t sum = calculate_average_fitness();
 	vector<Genome> children;
 
 	for(auto s = species.begin(); s != species.end(); ++s){
-		s.calculate_average_fitness();
-		int32_t breed = int(species.average_fitness / sum * population);
+		s->calculate_average_fitness();
+		int32_t breed = int(s->average_fitness / sum * population);
 		for(uint32_t i = 0; i < breed; ++i){
 			children.push_back(s->breed_child());
 		}

@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include "neuron.h"
+#include <functional>
 
 #define max_nodes 1000000
 #define POOL_PLACE 0
@@ -53,7 +54,6 @@ public:
 	} chances;
 	chances mutation_chance_rates;
 	NetworkMap network;
-	vector<string> button_names;
 
 	uint32_t fitness;
 	uint32_t fitness_adjusted;
@@ -68,6 +68,17 @@ public:
 	Genome& operator= (const Genome& other) = default;
 	Genome& operator= (Genome&& other) = default;
 
+	bool operator== (const Genome& other) const {
+		return 
+			fitness == other.fitness &&
+			fitness_adjusted == other.fitness_adjusted &&
+			max_neuron == other.max_neuron &&
+			global_rank == other.global_rank &&
+			inputs == other.inputs &&
+			outputs == other.outputs;
+
+	}
+
 	static Genome basic_genome(uint32_t inputs, uint32_t outputs);
 
 	void mutate();
@@ -80,16 +91,18 @@ public:
 	void link_mutate(const bool& force_bias);
 	void node_mutate();
 	void toggle_enable(const bool& enabled);
-	double disjoint(const Genome& other);
-	double weights(const Genome& other);
+	double disjoint(const Genome& other) const;
+	double weights(const Genome& other) const;
+	void call_mutation_with_chance(float p, std::function<void ()> func);
 
-	bool operator< (const Genome& other){
+	bool operator< (const Genome& other) const{
 		return fitness < other.fitness;
 	}
 
-	bool operator> (const Genome& other){
+	bool operator> (const Genome& other) const{
 		return fitness > other.fitness;
 	}
+	bool same_species(const Genome& other) const;
 private:
 	void reset_network_neurons();
 	void connect_neurons();

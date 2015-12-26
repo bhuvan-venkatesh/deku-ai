@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstdlib>     /* srand, rand */
 #include <ctime> 
-#include <functional>
 
 Genome::Genome(uint32_t inputs_, uint32_t outputs_):
 	 fitness(0),
@@ -47,7 +46,7 @@ void Genome::mutate(){
 	auto link_mutate_func_bias = [this](){link_mutate(true);};
 	call_mutation_with_chance(mutation_chance_rates.bias, link_mutate_func_bias);
 
-	auto node_mutate_func = [this](){node_mutate();}
+	auto node_mutate_func = [this](){node_mutate();};
 	call_mutation_with_chance(mutation_chance_rates.node, node_mutate_func);
 
 	auto enable_mutate_func = [this](){toggle_enable(true);};
@@ -58,7 +57,7 @@ void Genome::mutate(){
 
 }
 
-void call_mutation_with_chance(float p, std::function<void ()> func){
+void Genome::call_mutation_with_chance(float p, std::function<void ()> func){
 	for(; p > 0; --p){
 		if(rand_double() < p)
 			func();
@@ -183,7 +182,7 @@ void Genome::node_mutate(){
 void Genome::toggle_enable(const bool& enable){
 	vector<Gene*> candidates;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(i->enable == !enable){
+		if(i->enabled == !enable){
 			candidates.push_back(&(*i));
 		}
 	}
@@ -194,7 +193,7 @@ void Genome::toggle_enable(const bool& enable){
 }
 
 //TODO: make more efficient if need be
-double Genome::disjoint(const Genome& other){
+double Genome::disjoint(const Genome& other) const {
 	uint32_t disjoint_genes=0;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		if(std::find(other.genes.begin(), other.genes.end(), *i) == other.genes.end()){
@@ -210,20 +209,20 @@ double Genome::disjoint(const Genome& other){
 	return double(disjoint_genes) / std::max(genes.size(), other.genes.size());
 }
 
-double Genome::weights(const Genome& other){
+double Genome::weights(const Genome& other) const{
 	double sum=0;
 	uint32_t incident = 0;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		auto gene2 = std::find(other.genes.begin(), other.genes.end(), *i);
 		if(gene2 != other.genes.end()){
-			sum += std::abs(i->weight - gene2->weight);
+			sum += std::abs(i->gene_weight - gene2->gene_weight);
 			incident++;
 		}
 	}
 	return sum / incident;
 }
 
-bool Genome::same_species(const Genome& other){
+bool Genome::same_species(const Genome& other) const{
 	double delta_d = delta_disjoint*disjoint(other);
 	double delta_w = delta_weights*weights(other);
 	return delta_d + delta_w < delta_threshold;
@@ -307,7 +306,8 @@ void Genome::evaluate_network(){
 std::unordered_map<string, bool> Genome::collect_button_commands(){
 	unordered_map<string, bool> output_return;
 	for(uint32_t i = 0; i < outputs; ++i){
-		string button = "P1 "+button_names[i];
+		//TODO:UPDATE
+		string button = "P1 ";
 		// > 0 is the test for whether to push button or not
 		output_return[button] = network[max_nodes+i].weight > 0;
 	}

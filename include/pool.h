@@ -2,6 +2,9 @@
 #define POOL_H
 #include <cstdint>
 #include <unordered_map>
+#include "species.h"
+//#include <cstdlib>
+//#include <cmath>
 #define stale_species 15
 #define population 300
 
@@ -9,7 +12,7 @@ using std::uint32_t;
 using std::vector;
 struct Pool{
 public:
-	Pool(uint32_t outputs);
+	Pool(uint32_t inputs_, uint32_t outputs_);
 	static uint32_t innovate();
 
 	Pool(const Pool& other) = default;
@@ -24,6 +27,7 @@ public:
 	uint32_t current_genome;
 	uint32_t current_frame;
 	uint32_t max_fitness;
+	uint32_t inputs, outputs;
 
 	void rank_globally();
 	uint32_t calculate_average_fitness();
