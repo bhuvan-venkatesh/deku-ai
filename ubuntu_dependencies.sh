@@ -49,9 +49,13 @@ sudo sh -c 'echo "/usr/local/lib" > /etc/ld.so.conf.d/opencv.conf'
 sudo ldconfig
 echo "OpenCV" $version "ready to be used"
 
-
+##Non-free needs to be added
 sudo add-apt-repository --yes ppa:xqms/opencv-nonfree
 sudo apt-get update 
 sudo apt-get install libopencv-nonfree-dev
 
-
+##Ubuntu deps for video application
+sudo apt-get install build-essential pkg-config qt4-qmake libqt4-dev libavformat-dev \
+libavcodec-dev libavutil-dev libswscale-dev libasound2-dev libpulse-dev libjack-jackd2-dev \
+libgl1-mesa-dev libglu1-mesa-dev libx11-dev libxfixes-dev libxext-dev libxi-dev g++-multilib \
+libx11-6:i386 libxfixes3:i386 libglu1-mesa:i386

@@ -38,3 +38,5 @@ check:
 	$(CXX) $(CXXFLAGS) -I$(HEADERS) $(TEST)$(TEST_SRC)gene_test.cpp \
 	$(SOURCE)gene.cpp $(HEADERS)gene.h -o $(TEST)$(TEST_BIN)gene_test && \
 	./$(TEST)$(TEST_BIN)gene_test;
+
+	g++ eye.cpp -lcairo -lX11 -lopencv_calib3d -lopencv_contrib -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_gpu -lopencv_highgui -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching -lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab
