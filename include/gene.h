@@ -1,5 +1,6 @@
 #ifndef GENE_H
 #define GENE_H
+
 #include <cstdint>
 
 using std::uint32_t;

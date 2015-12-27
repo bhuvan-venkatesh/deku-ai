@@ -19,5 +19,7 @@ int main(){
 	Pool pool(inputs, outputs);
 	Gene gene;
 	Eye eye;
+	std::vector<cv::KeyPoint> points = eye.analyze_screen();
+	std::cout<<points[0].pt.x<<" "<<points[0].pt.y;
 	return 0;
 }
