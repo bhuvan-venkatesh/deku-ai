@@ -4,17 +4,17 @@
 #include <vector>
 #include "genome.h"
 #define crossover_chance 0.75
-using std::uint32_t;
+using std::int32_t;
 using std::vector;
 struct Species{
 public:
-	uint32_t top_fitness;
-	uint32_t staleness;
-	uint32_t average_fitness;
-	uint32_t inputs, outputs;
+	int32_t top_fitness;
+	int32_t staleness;
+	int32_t average_fitness;
+	int32_t inputs, outputs;
 	vector<Genome> genomes;
 
-	Species(uint32_t inputs_, uint32_t outputs_);
+	Species(int32_t inputs_, int32_t outputs_);
 	Species(const Species& other) = default;
 	Species(Species&& other) = default;
 	Species& operator= (const Species& other) = default;

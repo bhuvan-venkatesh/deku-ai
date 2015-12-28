@@ -15,10 +15,10 @@
 
 
 
-typedef std::unordered_map<std::uint32_t,Neuron> NetworkMap;
+typedef std::unordered_map<std::int32_t,Neuron> NetworkMap;
 //In case there is a need to change later
 using std::vector;
-using std::uint32_t;
+using std::int32_t;
 using std::unordered_map;
 using std::string;
 
@@ -55,14 +55,14 @@ public:
 	chances mutation_chance_rates;
 	NetworkMap network;
 
-	uint32_t fitness;
-	uint32_t fitness_adjusted;
-	uint32_t max_neuron;
-	uint32_t global_rank;
-	uint32_t inputs;
-	uint32_t outputs;
+	int32_t fitness;
+	int32_t fitness_adjusted;
+	int32_t max_neuron;
+	int32_t global_rank;
+	int32_t inputs;
+	int32_t outputs;
 
-	Genome(uint32_t inputs_, uint32_t outputs_);
+	Genome(int32_t inputs_, int32_t outputs_);
 	Genome(const Genome& other) = default;
 	Genome(Genome&& other) = default;
 	Genome& operator= (const Genome& other) = default;
@@ -79,13 +79,13 @@ public:
 
 	}
 
-	static Genome basic_genome(uint32_t inputs, uint32_t outputs);
+	static Genome basic_genome(int32_t inputs, int32_t outputs);
 
 	void mutate();
 	void generate_network();
-	unordered_map<string, bool> evaluate(vector<uint32_t> inputs);
+	vector<bool> evaluate(vector<int32_t> inputs);
 	Genome crossover(const Genome& other) const;
-	uint32_t random_neuron(const bool& non_input) const;
+	int32_t random_neuron(const bool& non_input) const;
 	bool constains_link(const Gene& link) const;
 	void point_mutate();
 	void link_mutate(const bool& force_bias);
@@ -106,16 +106,16 @@ public:
 private:
 	void reset_network_neurons();
 	void connect_neurons();
-	bool validate_input(const vector<uint32_t>& inputs) const;
-	void initialize_network_neuron(uint32_t number);
-	void update_network_weights(const vector<uint32_t>& inputs);
+	bool validate_input(const vector<int32_t>& inputs) const;
+	void initialize_network_neuron(int32_t number);
+	void update_network_weights(const vector<int32_t>& inputs);
 	void evaluate_network();
-	unordered_map<string, bool> collect_button_commands();
+	vector<bool> collect_button_commands();
 
 	Genome random_gene_swap(const Genome& higher_fitness, 
 		const Genome& lower_fitness) const;
 	double rand_double();
-	bool is_input_neuron(uint32_t neuron_number) const;
+	bool is_input_neuron(int32_t neuron_number) const;
 	
 	template<typename T>
 	void mutate_rate(T& rate);

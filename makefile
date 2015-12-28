@@ -34,6 +34,7 @@ all: $(EXE_PATH)
 # Pattern rules for object src files
 
 check: $(TEST_EXE)
+	(cd $(TEST_BIN_DIR) ; for f in * ; do ./$$f ; done)
 
 $(OBJS_DIR)/%.o: $(SOURCE_DIR)/%.cpp | $(OBJS_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
@@ -59,9 +60,6 @@ $(TEST_BIN_DIR):
 
 clean:
 	(cd $(OBJS_DIR); rm -rf *)
-
-test:
-	(cd $(TEST_BIN_DIR) ; for f in * ; do ./$$f ; done)
 
 .PHONY: all clean
 

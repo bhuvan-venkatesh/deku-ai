@@ -2,7 +2,7 @@
 #include <ctime>
 #include <cstdlib>
 
-Species::Species(uint32_t inputs_, uint32_t outputs_):
+Species::Species(int32_t inputs_, int32_t outputs_):
 	top_fitness(0),
 	staleness(0),
 	average_fitness(0),
@@ -12,7 +12,7 @@ Species::Species(uint32_t inputs_, uint32_t outputs_):
 }
 
 void Species::calculate_average_fitness(){
-	uint32_t total = 0;
+	int32_t total = 0;
 	for(auto g = genomes.begin(); g != genomes.end(); ++g){
 		total += g->global_rank;
 	}

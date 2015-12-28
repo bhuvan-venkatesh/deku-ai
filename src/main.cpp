@@ -8,7 +8,7 @@
 #include "gene.h"
 #include "eye.h"
 
-
+using cv::KeyPoint;
 int main(){
 	int inputs = 100;
 	int outputs = 8;
@@ -19,7 +19,14 @@ int main(){
 	Pool pool(inputs, outputs);
 	Gene gene;
 	Eye eye;
+	eye.draw_keypoints = true;
 	std::vector<cv::KeyPoint> points = eye.analyze_screen();
-	std::cout<<points[0].pt.x<<" "<<points[0].pt.y;
+	std::sort(points.begin(), points.end(), [](const KeyPoint& lhs, const KeyPoint& rhs){
+		return lhs.response > rhs.response;
+	});
+	for(auto i = points.begin(); i != points.end(); ++i)
+		std::cout<<i->pt.x<<" "<<i->pt.y
+					<<" "<<i->size<<" "<<i->response<<std::endl;
+	getchar();
 	return 0;
 }

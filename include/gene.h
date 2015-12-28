@@ -3,18 +3,18 @@
 
 #include <cstdint>
 
-using std::uint32_t;
+using std::int32_t;
 
 struct Gene{
 public:
-	uint32_t into;
-	uint32_t out;
-	uint32_t gene_weight;
-	uint32_t innovation;
+	int32_t into;
+	int32_t out;
+	int32_t gene_weight;
+	int32_t innovation;
 	bool enabled;
 
 	Gene();
-	Gene(const uint32_t& into_, const uint32_t& out_);
+	Gene(const int32_t& into_, const int32_t& out_);
 	Gene(const Gene& swap) = default;
 	Gene(Gene&& rhs) = default;
 	Gene& operator=(const Gene& rhs) = default;

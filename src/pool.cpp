@@ -1,9 +1,9 @@
 #include "pool.h"
 #include <algorithm>
 
-uint32_t Pool::innovation = 0;
+int32_t Pool::innovation = 0;
 
-Pool::Pool(uint32_t inputs_, uint32_t outputs_):
+Pool::Pool(int32_t inputs_, int32_t outputs_):
 	generation(0),
 	current_species(1),
 	current_genome(1),
@@ -13,7 +13,7 @@ Pool::Pool(uint32_t inputs_, uint32_t outputs_):
 	outputs(outputs_){
 		//BI
 }
-uint32_t Pool::innovate(){
+int32_t Pool::innovate(){
 	return ++Pool::innovation;
 }
 
@@ -30,13 +30,13 @@ void Pool::rank_globally(){
 	std::sort(global.begin(), global.end(), [](Genome* a, Genome* b){
 		return *a < *b;
 	});
-	for(uint32_t i = 0; i < global.size(); ++i){
+	for(int32_t i = 0; i < global.size(); ++i){
 		global[i]->global_rank = i+1;
 	}
 }
 
-uint32_t Pool::calculate_average_fitness(){
-	uint32_t total = 0;
+int32_t Pool::calculate_average_fitness(){
+	int32_t total = 0;
 	for(auto s = species.begin(); s != species.end(); ++s){
 		total += s->average_fitness;
 	}
@@ -46,7 +46,7 @@ uint32_t Pool::calculate_average_fitness(){
 void Pool::cull_species(bool cut_to_one){
 	for(auto s = species.begin(); s != species.end(); ++s){
 		std::sort(s->genomes.begin(), s->genomes.end(), std::greater<Genome>());
-		uint32_t remaining = std::ceil(species.size()/2);
+		int32_t remaining = std::ceil(species.size()/2);
 		if(cut_to_one){
 			remaining = 1;
 		}
@@ -57,7 +57,7 @@ void Pool::cull_species(bool cut_to_one){
 
 void Pool::remove_stale_species(){
 	rank_globally();
-	for(uint32_t i = 0; i < species.size(); ++i){
+	for(int32_t i = 0; i < species.size(); ++i){
 		Species& s = species[i];
 		std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
 		if(s.genomes[0].fitness > s.top_fitness){
@@ -76,7 +76,7 @@ void Pool::remove_stale_species(){
 void Pool::remove_weak_species(){
 
 	auto sum = calculate_average_fitness();
-	for(uint32_t i = 0; i < species.size(); ++i){
+	for(int32_t i = 0; i < species.size(); ++i){
 		Species& s= species[i];
 		int32_t breed = int(s.average_fitness / sum * population);
 		if(breed < 1){
@@ -112,13 +112,13 @@ void Pool::new_generation(){
 		s->calculate_average_fitness();
 	}
 	remove_weak_species();
-	uint32_t sum = calculate_average_fitness();
+	int32_t sum = calculate_average_fitness();
 	vector<Genome> children;
 
 	for(auto s = species.begin(); s != species.end(); ++s){
 		s->calculate_average_fitness();
 		int32_t breed = int(s->average_fitness / sum * population);
-		for(uint32_t i = 0; i < breed; ++i){
+		for(int32_t i = 0; i < breed; ++i){
 			children.push_back(s->breed_child());
 		}
 	}

@@ -5,7 +5,7 @@
 
 struct Brain{
 public:
-	Brain(std::uint32_t inputs, std::uint32_t outputs): pool(Pool(inputs, outputs)){};
+	Brain(std::int32_t inputs, std::int32_t outputs): pool(Pool(inputs, outputs)){};
 private:
 	Pool pool;
 };

@@ -23,7 +23,6 @@ std::vector<KeyPoint> Eye::analyze_screen(){
         drawKeypoints( img_1, points, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
         imshow("Keypoints 1", img_keypoints_1 );
         waitKey(0);
-
     }
 
     cairo_surface_destroy(x11_surf);

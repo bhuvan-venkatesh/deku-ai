@@ -5,7 +5,7 @@
 #include <cstdlib>     /* srand, rand */
 #include <ctime> 
 
-Genome::Genome(uint32_t inputs_, uint32_t outputs_):
+Genome::Genome(int32_t inputs_, int32_t outputs_):
 	 fitness(0),
 	 fitness_adjusted(0),
 	 max_neuron(0),
@@ -15,9 +15,9 @@ Genome::Genome(uint32_t inputs_, uint32_t outputs_):
 	 	//BI
 	 }
 
-Genome Genome::basic_genome(uint32_t inputs, uint32_t outputs){
+Genome Genome::basic_genome(int32_t inputs, int32_t outputs){
 	Genome return_value(inputs, outputs);
-	uint32_t innovation = 1;
+	int32_t innovation = 1;
 
 	return_value.max_neuron = inputs-1;
 	return_value.mutate();
@@ -70,7 +70,7 @@ void Genome::generate_network(){
 	connect_neurons();
 }
 
-unordered_map<string, bool> Genome::evaluate(vector<uint32_t> inputs) {
+vector<bool> Genome::evaluate(vector<int32_t> inputs) {
 	if(!validate_input(inputs)){
 		return unordered_map<string, bool>();
 	}
@@ -94,12 +94,12 @@ Genome Genome::crossover(const Genome& other) const{
  	return child;
 }
 
-uint32_t Genome::random_neuron(const bool& non_input) const{
-	vector<uint32_t> neurons;
-	for(uint32_t i = 0; !non_input && i < inputs; ++i){
+int32_t Genome::random_neuron(const bool& non_input) const{
+	vector<int32_t> neurons;
+	for(int32_t i = 0; !non_input && i < inputs; ++i){
 		neurons.push_back(i);
 	}
-	for(uint32_t i = 0; i < outputs; ++i){
+	for(int32_t i = 0; i < outputs; ++i){
 		neurons.push_back(max_nodes+i);
 	}
 	for(auto i = genes.begin(); i != genes.end(); ++i){
@@ -139,7 +139,7 @@ void Genome::point_mutate(){
 }
 
 void Genome::link_mutate(const bool& force_bias){
-	uint32_t neuron1 = random_neuron(false), neuron2 = random_neuron(true);
+	int32_t neuron1 = random_neuron(false), neuron2 = random_neuron(true);
 	if(is_input_neuron(neuron1) && is_input_neuron(neuron2))
 		return;
 	if(is_input_neuron(neuron2))
@@ -194,7 +194,7 @@ void Genome::toggle_enable(const bool& enable){
 
 //TODO: make more efficient if need be
 double Genome::disjoint(const Genome& other) const {
-	uint32_t disjoint_genes=0;
+	int32_t disjoint_genes=0;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		if(std::find(other.genes.begin(), other.genes.end(), *i) == other.genes.end()){
 			disjoint_genes++;
@@ -211,7 +211,7 @@ double Genome::disjoint(const Genome& other) const {
 
 double Genome::weights(const Genome& other) const{
 	double sum=0;
-	uint32_t incident = 0;
+	int32_t incident = 0;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		auto gene2 = std::find(other.genes.begin(), other.genes.end(), *i);
 		if(gene2 != other.genes.end()){
@@ -249,10 +249,10 @@ bool Genome::same_species(const Genome& other) const{
 
 void Genome::reset_network_neurons(){
 	network.clear();
-	for(uint32_t i = 0; i < inputs; ++i){
+	for(int32_t i = 0; i < inputs; ++i){
 		network[i] = Neuron();
 	}
-	for(uint32_t i = 0; i < outputs; ++i){
+	for(int32_t i = 0; i < outputs; ++i){
 		network[max_nodes+i] = Neuron();
 	}
 }
@@ -267,13 +267,13 @@ void Genome::connect_neurons(){
 	}
 }
 
-void Genome::initialize_network_neuron(uint32_t number){
+void Genome::initialize_network_neuron(int32_t number){
 	if(network.find(number) == network.end()){
 		network[number] = Neuron();
 	}
 }
 
-bool Genome::validate_input(const vector<uint32_t>& inputs_) const{
+bool Genome::validate_input(const vector<int32_t>& inputs_) const{
 	if(inputs_.size() != inputs){
 		std::cout<<"Incorrect number of inputs to the network";
 		return false;
@@ -281,8 +281,8 @@ bool Genome::validate_input(const vector<uint32_t>& inputs_) const{
 	return true;
 }
 
-void Genome::update_network_weights(const vector<uint32_t>& inputs){
-	for(uint32_t i = 0; i < this->inputs; ++i){
+void Genome::update_network_weights(const vector<int32_t>& inputs){
+	for(int32_t i = 0; i < this->inputs; ++i){
 		network[i].weight = inputs[i];
 	}
 }
@@ -303,13 +303,11 @@ void Genome::evaluate_network(){
 	}
 }
 
-std::unordered_map<string, bool> Genome::collect_button_commands(){
-	unordered_map<string, bool> output_return;
-	for(uint32_t i = 0; i < outputs; ++i){
-		//TODO:UPDATE
-		string button = "P1 ";
+vector<bool> Genome::collect_button_commands(){
+	vector<bool> output_return;
+	for(int32_t i = 0; i < outputs; ++i){
 		// > 0 is the test for whether to push button or not
-		output_return[button] = network[max_nodes+i].weight > 0;
+		output_return.push_back(network[max_nodes+i].weight > 0);
 	}
 	return output_return;
 }
@@ -318,7 +316,7 @@ std::unordered_map<string, bool> Genome::collect_button_commands(){
 Genome Genome::random_gene_swap(const Genome& higher_fitness, 
 		const Genome& lower_fitness) const{
 	Genome child(inputs, outputs);
-	std::unordered_map<uint32_t, Gene> innov2;
+	std::unordered_map<int32_t, Gene> innov2;
 	for(auto i = lower_fitness.genes.begin(); i != lower_fitness.genes.end(); ++i){
 		innov2[i->innovation] = *i;
 	}
@@ -337,7 +335,7 @@ Genome Genome::random_gene_swap(const Genome& higher_fitness,
 	return child;
 }
 
-bool Genome::is_input_neuron(uint32_t neuron_number) const{
+bool Genome::is_input_neuron(int32_t neuron_number) const{
 	return neuron_number < inputs;
 }
 

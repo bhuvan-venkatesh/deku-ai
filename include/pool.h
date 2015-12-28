@@ -8,12 +8,12 @@
 #define stale_species 15
 #define population 300
 
-using std::uint32_t;
+using std::int32_t;
 using std::vector;
 struct Pool{
 public:
-	Pool(uint32_t inputs_, uint32_t outputs_);
-	static uint32_t innovate();
+	Pool(int32_t inputs_, int32_t outputs_);
+	static int32_t innovate();
 
 	Pool(const Pool& other) = default;
 	Pool(Pool&& other) = default;
@@ -21,16 +21,16 @@ public:
 	Pool& operator=(Pool&& other) = default;
 
 	vector<Species> species;
-	uint32_t generation;
-	static uint32_t innovation;
-	uint32_t current_species;
-	uint32_t current_genome;
-	uint32_t current_frame;
-	uint32_t max_fitness;
-	uint32_t inputs, outputs;
+	int32_t generation;
+	static int32_t innovation;
+	int32_t current_species;
+	int32_t current_genome;
+	int32_t current_frame;
+	int32_t max_fitness;
+	int32_t inputs, outputs;
 
 	void rank_globally();
-	uint32_t calculate_average_fitness();
+	int32_t calculate_average_fitness();
 	void cull_species(bool cut_to_one);
 	void remove_stale_species();
 	void remove_weak_species();

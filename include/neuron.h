@@ -7,7 +7,7 @@
 #include <cstdint>
 
 using std::vector;
-using std::uint32_t;
+using std::int32_t;
 struct Neuron{
 	vector<Gene> incoming;
 	double weight;
