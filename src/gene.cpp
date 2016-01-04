@@ -9,7 +9,7 @@ Gene::Gene(const int32_t& into_, const int32_t& out_):
 	innovation(0), enabled(true){
 }
 
-bool Gene::save(ofstream& ofs){
+bool Gene::save(ofstream& ofs) const {
 		/*Flush once at the end of the
 		stream to make use of buffering
 		efficency while preserving parse

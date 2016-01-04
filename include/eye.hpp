@@ -14,7 +14,9 @@ extern "C"{
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
 #include "emulator_window.hpp"
+
 using namespace cv;
+
 struct Eye{
 public:
 	Eye();

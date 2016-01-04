@@ -32,7 +32,7 @@ public:
 		return innovation == rhs.innovation;
 	}
 
-	bool save(ofstream& ofs);
+	bool save(ofstream& ofs) const;
   bool load(ifstream& ifs);
 private:
 	//BI

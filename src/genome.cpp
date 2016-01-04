@@ -228,7 +228,84 @@ bool Genome::same_species(const Genome& other) const{
 	return delta_d + delta_w < delta_threshold;
 }
 
+bool Genome::save(ofstream& ofs) const{
+	ofs << fitness << "\n";
+	ofs << fitness_adjusted << "\n";
+	ofs << max_neuron << "\n";
+	ofs << global_rank << "\n";
+	ofs << inputs << "\n";
+	ofs << outputs << std::endl;
 
+	ofs << mutation_chance_rates.connection	<< "\n";
+	ofs << mutation_chance_rates.disturb	<< "\n";
+	ofs << mutation_chance_rates.link	<< "\n";
+	ofs << mutation_chance_rates.bias	<< "\n";
+	ofs << mutation_chance_rates.node	<< "\n";
+	ofs << mutation_chance_rates.enable	<< "\n";
+	ofs << mutation_chance_rates.disable	<< "\n";
+	ofs << mutation_chance_rates.step	<< std::endl;
+
+	ofs << genes.size() << "\n";
+	for(auto i = genes.begin(); i != genes.end(); ++i){
+			i->save(ofs);
+	}
+
+	ofs << network.size() << "\n";
+	for(auto i = network.begin(); i != network.end(); ++i){
+			ofs << i->first<, "\n";
+			i->second.save();
+	}
+}
+
+bool Genome::load(ifstream& ifs){
+	ifs >> fitness
+	 	 	>> fitness_adjusted
+			>> max_neuron
+			>> global_rank
+			>> inputs
+			>> outputs;
+
+	ifs >> mutation_chance_rates.connection
+			>> mutation_chance_rates.disturb
+			>> mutation_chance_rates.link
+			>> mutation_chance_rates.bias
+			>> mutation_chance_rates.node
+			>> mutation_chance_rates.enable
+			>> mutation_chance_rates.disable
+			>> mutation_chance_rates.step;
+
+	size_t genes_size;
+	ifs >> genes_size;
+	genes.clear();
+	for(size_t i = 0; i < genes_size; ++i){
+			Gene temp;
+			temp.load(ifs);
+			genes.push_back(temp);
+	}
+
+	size_t network_size;
+	ifs >> network_size;
+	for(size_t i = 0; i < network_size; ++i){
+			Neuron temp;
+			temp.load(ifs);
+			vector<int32_t> innovations;
+			for(size_t j = 0; j < temp.incoming.size(); ++i){
+					innovations.push_back(temp.incoming[j]->innovation)
+					delete temp.incoming[j]->innovation;
+			}
+			temp.incoming.clear();
+			for(auto i = innovations.begin(); i != innovations.end(); ++i){
+					for(auto j = genes.begin(); j != genes.end(); ++j){
+							if(j->innovation == *i){
+								temp.incoming.push_back(&*j);
+								break;
+							}
+					}
+			}
+			genes.push_back(temp);
+	}
+
+}
 
 /***************************************************
 

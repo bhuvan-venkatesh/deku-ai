@@ -1,18 +1,23 @@
 #ifndef NEURON_H
 #define NEURON_H
 
-#include "gene.hpp"
 #include <vector>
 #include <unordered_map>
 #include <cstdint>
+#include "gene.hpp"
+#include "serial.hpp"
 
 using std::vector;
 using std::int32_t;
-struct Neuron{
+
+struct Neuron: public Serial{
 	vector<Gene*> incoming;
 	double weight;
 
 	double sigmoid(const double& x) const;
+
+	bool save(ofstream& ofs) const;
+	bool load(ifstream& ifs);
 
 	Neuron(): weight(0) {};
 	Neuron(const Neuron& other) = default;

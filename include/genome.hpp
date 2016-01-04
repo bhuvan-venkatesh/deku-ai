@@ -3,8 +3,10 @@
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
-#include "neuron.hpp"
 #include <functional>
+
+#include "neuron.hpp"
+#include "serial.hpp"
 
 #define max_nodes 1000000
 #define delta_disjoint 2.0
@@ -35,12 +37,16 @@ namespace action_chances{
 
 
 
-class Genome{
+class Genome: public Serial{
 public:
 	//TODO: Find flexible values, converging
+	int32_t fitness;
+	int32_t fitness_adjusted;
+	int32_t max_neuron;
+	int32_t global_rank;
+	int32_t inputs;
+	int32_t outputs;
 
-
-	vector<Gene> genes;
 	typedef struct {
 		float connection	= action_chances::mutation_connect;
 		float disturb			= action_chances::disturb;
@@ -52,14 +58,8 @@ public:
 		float step 				= action_chances::step_size;
 	} chances;
 	chances mutation_chance_rates;
+	vector<Gene> genes;
 	NetworkMap network;
-
-	int32_t fitness;
-	int32_t fitness_adjusted;
-	int32_t max_neuron;
-	int32_t global_rank;
-	int32_t inputs;
-	int32_t outputs;
 
 	Genome(int32_t inputs_, int32_t outputs_);
 	Genome(const Genome& other) = default;
@@ -102,6 +102,9 @@ public:
 		return fitness > other.fitness;
 	}
 	bool same_species(const Genome& other) const;
+
+	bool save(ofstream& ofs) const;
+	bool load(ifstream& ifs);
 private:
 	void reset_network_neurons();
 	void connect_neurons();

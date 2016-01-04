@@ -6,10 +6,11 @@
 
 using std::ofstream;
 using std::ifstream;
+using std::endl;
 
 class Serial{
 public:
-   virtual bool save(ofstream& ofs)=0;
+   virtual bool save(ofstream& ofs) const=0;
    virtual bool load(ifstream& ifs)=0;
 };
 
