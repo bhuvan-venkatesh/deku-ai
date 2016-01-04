@@ -1,54 +1,21 @@
 #include "eye.h"
-extern "C"{
-#include <xdo.h>
-}
-#define emulator_name "zsnes"
-#define screen_default NULL
 using std::cout;
 using namespace cv;
 typedef unsigned int uint;
 //ASSUMES default dislay
 Eye::Eye(){
-    disp = XOpenDisplay(screen_default);
-    scr = DefaultScreen(disp);
-    get_window(emulator_name);
-    screen = XDefaultScreenOfDisplay(disp);
+    window = Emulator_Window::get_emulator();
     draw_keypoints = false;
 }
 
-void Eye::get_window(const char* name){
-
-    xdo_t* xdo = xdo_new (screen_default);
-    if(!xdo){
-        std::cerr<<"Xdo Allocation Failed"<<std::endl;
-        throw;
-    }
-    xdo_search_t search;
-    search.max_depth = -1;
-    search.require = xdo_search::SEARCH_ANY;
-
-    search.searchmask |= SEARCH_NAME;
-    search.winname = name;
-
-    Window *ret;
-    unsigned int len;
-    xdo_search_windows(xdo, &search, &ret, &len );
-
-    if(len != 1){
-        std::cerr<<"More than one match, be more specific"<<std::endl;
-        xdo_free(xdo);
-        throw;
-    }
-    //Assignment happens at the end to provide strong exception guarentee
-    xdo_get_window_size(xdo, ret[0], &width, &height);
-    root = ret[0];
-    xdo_free(xdo);
-}
-
 std::vector<KeyPoint> Eye::analyze_screen(){
-    cairo_surface_t* x11_surf = cairo_xlib_surface_create(disp, root, DefaultVisual(disp, scr), width, height);
-    cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf);
-    img_1 = convert_image_surface_to_mat(img_surf);
+    const unsigned int width = window->width, height = window->height;
+
+    cairo_surface_t* x11_surf = cairo_xlib_surface_create(window->disp, window->root,
+                                                          DefaultVisual(window->disp, window->scr),
+                                                          width, height);
+    cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf, width, height);
+    img_1 = convert_image_surface_to_mat(img_surf, width, height);
     vector<KeyPoint> points = analyze_keypoints(img_1);
     if(draw_keypoints){
         cv::Mat img_keypoints_1;
@@ -64,7 +31,8 @@ std::vector<KeyPoint> Eye::analyze_screen(){
     return points;
 }
 
-cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf){
+cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf,
+  const unsigned int& width, const unsigned int& height){
     cairo_surface_t* img_surf = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
     cairo_t* cr = cairo_create(img_surf);
     cairo_set_source_surface(cr, x11_surf, 0, 0);
@@ -76,7 +44,7 @@ cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf){
 
 }
 
-cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf){
+cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height){
     unsigned char* ptr = cairo_image_surface_get_data(img_surf);
 
     if(!ptr){

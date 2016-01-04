@@ -2,26 +2,37 @@
 #include <cstdlib>
 #include <string>
 #include <vector>
+#include <sstream>
+#include <ostream>
+#include <iterator>
+
+extern "C" {
+#include <xdo.h>
+}
+#include "emulator_window.h"
+
 using std::vector;
 using std::string;
 
-string get_command(vector<string> keys){
-	string items = "xdotool key";
-	for(auto i = keys.begin(); i != keys.end(); ++i){
-		items = items + " " + *i;
-	}
-	return items;
+string implode(const vector<string>& elements, const char* separator){
+	switch (elements.size())
+  {
+      case 0:
+          return "";
+      case 1:
+          return elements[0];
+      default:
+          std::ostringstream os;
+          std::copy(elements.begin(), elements.end()-1, std::ostream_iterator<std::string>(os, separator));
+          os << *elements.rbegin();
+          return os.str();
+  }
 }
 
-string get_command(string key){
-	return "xdotool key "+key;
+void press_key(const vector<string>& stuff){
+	static Emulator_Window* tool = NULL;
+	if( !tool )
+			tool = Emulator_Window::get_emulator();
+  string command = implode(stuff, "+");
+	int id = xdo_send_keysequence_window(tool->xdo, tool->root, command.c_str(), 0 );
 }
-
-void push_keys(vector<string> keys){
-	system(get_command(keys).c_str());
-}
-
-void push_keys(string key){
-	system(get_command(key).c_str());
-}
-

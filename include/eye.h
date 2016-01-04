@@ -13,6 +13,7 @@ extern "C"{
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
+#include "emulator_window.h"
 
 struct Eye{
 public:
@@ -21,20 +22,12 @@ public:
 	bool draw_keypoints;
 
 private:
-	Display *disp;
-	Window root;
-	Screen* screen;
-	unsigned int width;
-	unsigned int height;
-	int scr;
+	Emulator_Window* window;
 	cv::Mat img_1;
 
-	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf);
-	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf);
+	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);
+	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height);
 	std::vector<cv::KeyPoint> analyze_keypoints(const cv::Mat& img_1);
-	void get_window(const char* name);
-
-
 };
 
 #endif
