@@ -1,6 +1,6 @@
 #ifndef BRAIN_H
 #define BRAIN_H
-#include "pool.h"
+#include "pool.hpp"
 #include <cstdint>
 #include <unordered_map>
 

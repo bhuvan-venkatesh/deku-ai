@@ -1,4 +1,4 @@
-#include "species.h"
+#include "species.hpp"
 #include <ctime>
 #include <cstdlib>
 

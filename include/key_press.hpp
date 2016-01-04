@@ -9,7 +9,7 @@
 extern "C" {
 #include <xdo.h>
 }
-#include "emulator_window.h"
+#include "emulator_window.hpp"
 
 using std::vector;
 using std::string;

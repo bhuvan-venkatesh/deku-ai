@@ -1,10 +1,23 @@
-#include "eye.h"
+#include "eye.hpp"
+#define feature_detector_name "ORB"
 using std::cout;
-using namespace cv;
 typedef unsigned int uint;
+/* Possible configurations
+Ptr<FeatureDetector> surf = FeatureDetector::create("SURF");
+ Ptr<FeatureDetector> star = FeatureDetector::create("STAR");
+ Ptr<FeatureDetector> fast = FeatureDetector::create("FAST");
+ Ptr<FeatureDetector> sift = FeatureDetector::create("SIFT");
+ Ptr<FeatureDetector> orb = FeatureDetector::create("ORB");
+ Ptr<FeatureDetector> brisk = FeatureDetector::create("BRISK");
+ Ptr<FeatureDetector> mser = FeatureDetector::create("MSER");
+ Ptr<FeatureDetector> gftt = FeatureDetector::create("GFTT");
+ Ptr<FeatureDetector> harris = FeatureDetector::create("HARRIS");
+ Ptr<FeatureDetector> dense = FeatureDetector::create("Dense");
+ Ptr<FeatureDetector> simple = FeatureDetector::create("SimpleBlob");*/
 //ASSUMES default dislay
 Eye::Eye(){
     window = Emulator_Window::get_emulator();
+    detector = FeatureDetector::create(feature_detector_name);
     draw_keypoints = false;
 }
 
@@ -76,11 +89,9 @@ cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsign
 }
 
 std::vector<KeyPoint> Eye::analyze_keypoints(const cv::Mat& img_1){
-    int minHessian = 400;
-    SurfFeatureDetector detector( minHessian );
     std::vector<KeyPoint> keypoints_1;
     Mat img_keypoints_1;
 
-    detector.detect( img_1, keypoints_1 );
+    detector->detect( img_1, keypoints_1 );
     return keypoints_1;
 }

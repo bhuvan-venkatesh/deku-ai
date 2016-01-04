@@ -1,12 +1,12 @@
 #include <iostream>
-#include "key_press.h"
-#include "species.h"
-#include "genome.h"
-#include "neuron.h"
-#include "brain.h"
-#include "pool.h"
-#include "gene.h"
-#include "eye.h"
+#include "key_press.hpp"
+#include "species.hpp"
+#include "genome.hpp"
+#include "neuron.hpp"
+#include "brain.hpp"
+#include "pool.hpp"
+#include "gene.hpp"
+#include "eye.hpp"
 
 using cv::KeyPoint;
 int main(){

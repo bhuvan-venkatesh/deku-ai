@@ -3,11 +3,10 @@
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
-#include "neuron.h"
+#include "neuron.hpp"
 #include <functional>
 
 #define max_nodes 1000000
-#define POOL_PLACE 0
 #define delta_disjoint 2.0
 #define delta_weights 0.4
 #define delta_threshold 1.0
@@ -23,7 +22,7 @@ using std::unordered_map;
 using std::string;
 
 namespace action_chances{
-		const static float 
+		const static float
 			mutation_connect 	= 0.25,
 			disturb 			= 0.9,
 			link 				= 2.0,
@@ -44,13 +43,13 @@ public:
 	vector<Gene> genes;
 	typedef struct {
 		float connection	= action_chances::mutation_connect;
-		float disturb		= action_chances::disturb;
-		float link			= action_chances::link;
-		float bias 			= action_chances::bias_mutation;
-		float node			= action_chances::node;
-		float enable 		= action_chances::enable_mutation;
+		float disturb			= action_chances::disturb;
+		float link				= action_chances::link;
+		float bias 				= action_chances::bias_mutation;
+		float node				= action_chances::node;
+		float enable 			= action_chances::enable_mutation;
 		float disable 		= action_chances::disable_mutation;
-		float step 			= action_chances::step_size;
+		float step 				= action_chances::step_size;
 	} chances;
 	chances mutation_chance_rates;
 	NetworkMap network;
@@ -69,7 +68,7 @@ public:
 	Genome& operator= (Genome&& other) = default;
 
 	bool operator== (const Genome& other) const {
-		return 
+		return
 			fitness == other.fitness &&
 			fitness_adjusted == other.fitness_adjusted &&
 			max_neuron == other.max_neuron &&
@@ -112,11 +111,11 @@ private:
 	void evaluate_network();
 	vector<bool> collect_button_commands();
 
-	Genome random_gene_swap(const Genome& higher_fitness, 
+	Genome random_gene_swap(const Genome& higher_fitness,
 		const Genome& lower_fitness) const;
 	double rand_double();
 	bool is_input_neuron(int32_t neuron_number) const;
-	
+
 	template<typename T>
 	void mutate_rate(T& rate);
 };

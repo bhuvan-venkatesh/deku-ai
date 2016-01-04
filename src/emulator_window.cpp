@@ -1,4 +1,4 @@
-#include "emulator_window.h"
+#include "emulator_window.hpp"
 extern "C" {
 #include <xdo.h>
 }

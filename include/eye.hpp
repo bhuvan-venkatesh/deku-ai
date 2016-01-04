@@ -13,8 +13,8 @@ extern "C"{
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/nonfree/features2d.hpp"
 #include "opencv2/nonfree/nonfree.hpp"
-#include "emulator_window.h"
-
+#include "emulator_window.hpp"
+using namespace cv;
 struct Eye{
 public:
 	Eye();
@@ -23,6 +23,7 @@ public:
 
 private:
 	Emulator_Window* window;
+	Ptr<FeatureDetector> detector;
 	cv::Mat img_1;
 
 	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);

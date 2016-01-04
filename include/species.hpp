@@ -1,11 +1,16 @@
 #ifndef SPECIES_H
 #define SPECIES_H
+
+
 #include <cstdint>
 #include <vector>
-#include "genome.h"
+#include "genome.hpp"
+
 #define crossover_chance 0.75
+
 using std::int32_t;
 using std::vector;
+
 struct Species{
 public:
 	int32_t top_fitness;

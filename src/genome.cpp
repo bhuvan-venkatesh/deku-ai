@@ -1,5 +1,5 @@
-#include "genome.h"
-#include "pool.h"
+#include "genome.hpp"
+#include "pool.hpp"
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>     /* srand, rand */
@@ -261,7 +261,7 @@ void Genome::connect_neurons(){
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		if(i->enabled){
 			initialize_network_neuron(i->out);
-			network[i->out].incoming.push_back(*i);
+			network[i->out].incoming.push_back(&*i);
 			initialize_network_neuron(i->into);
 		}
 	}
@@ -295,8 +295,8 @@ void Genome::evaluate_network(){
 			double sum = 0;
 			for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
 				++incoming_gene){
-				sum += incoming_gene->gene_weight *
-						network[incoming_gene->into].weight;
+				sum += (*incoming_gene)->gene_weight *
+						network[(*incoming_gene)->into].weight;
 			}
 			current.weight = current.sigmoid(sum);
 		}

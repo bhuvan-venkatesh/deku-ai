@@ -2,11 +2,14 @@
 #define GENE_H
 
 #include <cstdint>
-
+#include "serial.hpp"
 using std::int32_t;
 
-struct Gene{
+struct Gene: public Serial
+{
 public:
+	/* With alignment -
+	 20 bytes*/
 	int32_t into;
 	int32_t out;
 	int32_t gene_weight;
@@ -28,6 +31,9 @@ public:
 	bool operator==(const Gene& rhs) const{
 		return innovation == rhs.innovation;
 	}
+
+	bool save(ofstream& ofs);
+  bool load(ifstream& ifs);
 private:
 	//BI
 };

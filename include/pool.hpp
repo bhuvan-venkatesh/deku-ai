@@ -2,9 +2,8 @@
 #define POOL_H
 #include <cstdint>
 #include <unordered_map>
-#include "species.h"
-//#include <cstdlib>
-//#include <cmath>
+#include "species.hpp"
+
 #define stale_species 15
 #define population 300
 

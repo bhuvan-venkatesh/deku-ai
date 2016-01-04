@@ -1,4 +1,4 @@
-#include "neuron.h"
+#include "neuron.hpp"
 #include <cmath>
 
 double Neuron::sigmoid(const double& x) const {

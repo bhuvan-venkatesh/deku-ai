@@ -11,7 +11,7 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 -I$(INCLUDE_DIR)/
+CXXFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -O2
 LDFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -L/usr/lib -Wl,--start-group -lcairo \
 -lX11 -lopencv_calib3d -lopencv_contrib -lopencv_core \
 -lopencv_features2d -lopencv_flann -lopencv_gpu -lopencv_highgui \
@@ -25,8 +25,8 @@ OBJS = $(addprefix $(OBJS_DIR)/,$(subst main.o,,$(subst .cpp,.o,$(subst $(SOURCE
 TEST_OBJS = $(addprefix $(TEST_OBJS_DIR)/,gene_test.o)
 
 MAIN_O = $(OBJS_DIR)/main.o
-HEADERS_INC = $(wildcard $(INCLUDE_DIR)/*.h)
-HEADERS = $(subst $(INCLUDE_DIR)/,,$(HEADERS_INC))
+# HEADERS_INC = $(wildcard $(INCLUDE_DIR)/*.hpp)
+# HEADERS = $(subst $(INCLUDE_DIR)/,,$(HEADERS_INC))
 
 EXE_PATH = $(BIN_DIR)/$(EXE)
 

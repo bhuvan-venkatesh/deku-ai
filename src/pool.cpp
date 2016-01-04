@@ -1,4 +1,4 @@
-#include "pool.h"
+#include "pool.hpp"
 #include <algorithm>
 
 int32_t Pool::innovation = 0;
