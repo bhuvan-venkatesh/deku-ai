@@ -3,7 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cstdlib>     /* srand, rand */
-#include <ctime> 
+#include <ctime>
 
 Genome::Genome(int32_t inputs_, int32_t outputs_):
 	 fitness(0),
@@ -51,7 +51,7 @@ void Genome::mutate(){
 
 	auto enable_mutate_func = [this](){toggle_enable(true);};
 	call_mutation_with_chance(mutation_chance_rates.enable, enable_mutate_func);
-	
+
 	auto disable_mutate_func = [this](){toggle_enable(false);};
 	call_mutation_with_chance(mutation_chance_rates.disable, disable_mutate_func);
 
@@ -72,7 +72,7 @@ void Genome::generate_network(){
 
 vector<bool> Genome::evaluate(vector<int32_t> inputs) {
 	if(!validate_input(inputs)){
-		return unordered_map<string, bool>();
+		return vector<bool>();
 	}
 	update_network_weights(inputs);
 	return collect_button_commands();
@@ -232,7 +232,7 @@ bool Genome::same_species(const Genome& other) const{
 
 /***************************************************
 
-			
+
 
 
 
@@ -295,7 +295,7 @@ void Genome::evaluate_network(){
 			double sum = 0;
 			for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
 				++incoming_gene){
-				sum += incoming_gene->gene_weight * 
+				sum += incoming_gene->gene_weight *
 						network[incoming_gene->into].weight;
 			}
 			current.weight = current.sigmoid(sum);
@@ -313,7 +313,7 @@ vector<bool> Genome::collect_button_commands(){
 }
 
 
-Genome Genome::random_gene_swap(const Genome& higher_fitness, 
+Genome Genome::random_gene_swap(const Genome& higher_fitness,
 		const Genome& lower_fitness) const{
 	Genome child(inputs, outputs);
 	std::unordered_map<int32_t, Gene> innov2;

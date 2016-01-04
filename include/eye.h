@@ -24,13 +24,16 @@ private:
 	Display *disp;
 	Window root;
 	Screen* screen;
-	int width;
-	int height;
+	unsigned int width;
+	unsigned int height;
 	int scr;
+	cv::Mat img_1;
 
 	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf);
 	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf);
 	std::vector<cv::KeyPoint> analyze_keypoints(const cv::Mat& img_1);
+	void get_window(const char* name);
+
 
 };
 
