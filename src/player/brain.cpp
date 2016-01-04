@@ -26,3 +26,15 @@ smarter on the input nodes -- communicating with the brain.
 It is also going to have to be highly randomized but highly
 sticky in order to latch on to right solutions we are going to need a metric
 To measure this somehow*/
+#include "eye.hpp"
+#include "brain.hpp"
+
+void Brain::play(){
+  vector<KeyPoint> key = eye.analyze_screen();
+  cv::Mat pic = eye.img_1;
+  vector<Point2f> points;
+  for(auto i = key.begin(); i != key.end(); ++i){
+    
+  }
+
+}

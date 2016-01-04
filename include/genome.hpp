@@ -35,8 +35,6 @@ namespace action_chances{
 			enable_mutation 	= 0.2;
 	};
 
-
-
 class Genome: public Serial{
 public:
 	//TODO: Find flexible values, converging

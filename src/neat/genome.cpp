@@ -103,11 +103,11 @@ int32_t Genome::random_neuron(const bool& non_input) const{
 		neurons.push_back(max_nodes+i);
 	}
 	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(!non_input || !is_input_neuron(i->into)){
-			neurons.push_back(i->into);
+		if(!non_input || !is_input_neuron(i->get_into_neuron())){
+			neurons.push_back(i->get_into_neuron());
 		}
-		if(!non_input || !is_input_neuron(i->out)){
-			neurons.push_back(i->out);
+		if(!non_input || !is_input_neuron(i->get_out_neuron())){
+			neurons.push_back(i->get_out_neuron());
 		}
 	}
 	srand(time(NULL));
@@ -116,7 +116,7 @@ int32_t Genome::random_neuron(const bool& non_input) const{
 
 bool Genome::constains_link(const Gene& link) const {
 	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(i->into == link.into && i->out == link.out){
+		if(i->same_link(link)){
 			return true;
 		}
 	}
@@ -132,9 +132,9 @@ void Genome::point_mutate(){
 	const float& step = mutation_chance_rates.step;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		if(rand_double() < mutation_chance_rates.disturb)
-			i->gene_weight += rand_double()*step*2 - step;
+			i->set_weight(i->get_weight()+rand_double()*step*2 - step);
 		else
-			i->gene_weight = rand_double()*4-2;
+			i->set_weight(rand_double()*4-2);
 	}
 }
 
@@ -146,13 +146,13 @@ void Genome::link_mutate(const bool& force_bias){
 		std::swap(neuron1,neuron2);
 	Gene link(neuron1, neuron2);
 	if(force_bias){
-		link.into = inputs-1;
+		link.set_into_neuron(inputs-1);
 	}
 	if(constains_link(link)){
 		return;
 	}
-	link.innovation = Pool::innovate(); //TODO: Fix this line with program logic
-	link.gene_weight = rand_double()*4-2;
+	link.set_innovation(Pool::innovate()); //TODO: Fix this line with program logic
+	link.set_weight(rand_double()*4-2);
 
 	genes.push_back(link);
 }
@@ -162,34 +162,34 @@ void Genome::node_mutate(){
 		return;
 	max_neuron++;
 	Gene gene = genes[rand()%genes.size()];
-	if(!gene.enabled)
+	if(!gene.is_enabled())
 		return;
-	gene.enabled = false;
+	gene.set_enabled(false);
 	Gene inp1(gene);
-	inp1.out = max_neuron;
-	inp1.gene_weight = 1.0;
-	inp1.innovation = Pool::innovate();
-	inp1.enabled = true;
+	inp1.set_out_neuron(max_neuron);
+	inp1.set_weight(1.0);
+	inp1.set_innovation(Pool::innovate());
+	inp1.set_enabled(true);
 	genes.push_back(inp1);
 
 	Gene gene2(gene);
-	gene2.into = max_neuron;
-	gene2.innovation = Pool::innovate();
-	gene2.enabled = true;
+	gene2.set_into_neuron(max_neuron);
+	gene2.set_innovation(Pool::innovate());
+	gene2.set_enabled(true);
 	genes.push_back(gene2);
 }
 
 void Genome::toggle_enable(const bool& enable){
 	vector<Gene*> candidates;
 	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(i->enabled == !enable){
+		if(i->is_enabled() == !enable){
 			candidates.push_back(&(*i));
 		}
 	}
 	if(candidates.size() == 0)
 		return;
-	bool& enabled = candidates[rand()%candidates.size()]->enabled;
-	enabled = !enabled;
+	auto& random_candidate = *candidates[rand()%candidates.size()];
+	random_candidate.set_enabled(!random_candidate.is_enabled());
 }
 
 //TODO: make more efficient if need be
@@ -215,7 +215,7 @@ double Genome::weights(const Genome& other) const{
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 		auto gene2 = std::find(other.genes.begin(), other.genes.end(), *i);
 		if(gene2 != other.genes.end()){
-			sum += std::abs(i->gene_weight - gene2->gene_weight);
+			sum += std::abs(i->get_weight() - gene2->get_weight());
 			incident++;
 		}
 	}
@@ -328,10 +328,10 @@ void Genome::reset_network_neurons(){
 
 void Genome::connect_neurons(){
 	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(i->enabled){
-			initialize_network_neuron(i->out);
-			network[i->out].incoming.push_back(&*i);
-			initialize_network_neuron(i->into);
+		if(i->is_enabled()){
+			initialize_network_neuron(i->get_out_neuron());
+			network[i->get_out_neuron()].incoming.push_back(&*i);
+			initialize_network_neuron(i->get_into_neuron());
 		}
 	}
 }
@@ -364,8 +364,8 @@ void Genome::evaluate_network(){
 			double sum = 0;
 			for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
 				++incoming_gene){
-				sum += (*incoming_gene)->gene_weight *
-						network[(*incoming_gene)->into].weight;
+				sum += (*incoming_gene)->get_weight() *
+						network[(*incoming_gene)->get_into_neuron()].weight;
 			}
 			current.weight = current.sigmoid(sum);
 		}
@@ -387,14 +387,14 @@ Genome Genome::random_gene_swap(const Genome& higher_fitness,
 	Genome child(inputs, outputs);
 	std::unordered_map<int32_t, Gene> innov2;
 	for(auto i = lower_fitness.genes.begin(); i != lower_fitness.genes.end(); ++i){
-		innov2[i->innovation] = *i;
+		innov2[i->get_innovation()] = *i;
 	}
 	srand(time(NULL));
 	for(auto i = higher_fitness.genes.begin(); i != higher_fitness.genes.end(); ++i){
 		Gene gene1 = *i;
-		if(innov2.find(gene1.innovation) != innov2.end()){
-			Gene gene2 = innov2[gene1.innovation];
-			if(rand()%2 && gene2.enabled){
+		if(innov2.find(gene1.get_innovation()) != innov2.end()){
+			Gene gene2 = innov2[gene1.get_innovation()];
+			if(rand()%2 && gene2.is_enabled()){
 				child.genes.push_back(gene2);
 				continue;
 			}

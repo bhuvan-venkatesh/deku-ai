@@ -10,11 +10,6 @@ struct Gene: public Serial
 public:
 	/* With alignment -
 	 20 bytes*/
-	int32_t into;
-	int32_t out;
-	int32_t gene_weight;
-	int32_t innovation;
-	bool enabled;
 
 	Gene();
 	Gene(const int32_t& into_, const int32_t& out_);
@@ -32,10 +27,57 @@ public:
 		return innovation == rhs.innovation;
 	}
 
+	bool same_link(const Gene& other) const {
+		return into == other.into && out == other.out;
+	}
+
 	bool save(ofstream& ofs) const;
   bool load(ifstream& ifs);
+
+	inline int32_t get_into_neuron() const{
+		return into;
+	}
+
+	inline void set_into_neuron(const int32_t& into_){
+		into = into_;
+	}
+
+	inline int32_t get_out_neuron() const{
+		return out;
+	}
+
+	inline void set_out_neuron(const int32_t& out_){
+		out = out_;
+	}
+
+	inline int32_t get_weight() const{
+		return weight;
+	}
+	inline void set_weight(const int32_t& weight_){
+		weight = weight_;
+	}
+
+	inline int32_t get_innovation() const{
+		return innovation;
+	}
+
+	inline void set_innovation(const int32_t& innov_){
+		innovation = innov_;
+	}
+
+	inline bool is_enabled() const{
+		return enabled;
+	}
+
+	inline void set_enabled(const bool& enab_){
+		enabled = enab_;
+	}
 private:
-	//BI
+	int32_t into;
+	int32_t out;
+	int32_t weight;
+	int32_t innovation;
+	bool enabled;
 };
 
 

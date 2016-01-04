@@ -22,11 +22,11 @@ public:
 	Eye();
 	std::vector<cv::KeyPoint> analyze_screen();
 	bool draw_keypoints;
+	cv::Mat img_1;
 
 private:
 	Emulator_Window* window;
 	Ptr<FeatureDetector> detector;
-	cv::Mat img_1;
 
 	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);
 	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height);

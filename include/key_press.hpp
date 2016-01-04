@@ -29,7 +29,12 @@ string implode(const vector<string>& elements, const char* separator){
   }
 }
 
-void press_key(const vector<string>& stuff){
+/* Xdotool Keykodes
+* alphanumerics = "[A-Za-z0-9]" ex: "A"
+* Directional = "Up" "Down" etc..
+* Special Keys = "Alt" "Ctrl_L" "Shift_L"
+*/
+void press_keys(const vector<string>& stuff){
 	static Emulator_Window* tool = NULL;
 	if( !tool )
 			tool = Emulator_Window::get_emulator();

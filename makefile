@@ -13,30 +13,32 @@ CXX = clang++
 LD = clang++
 CXXFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -O2
 LDFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -L/usr/lib -Wl,--start-group -lcairo \
--lX11 -lopencv_calib3d -lopencv_contrib -lopencv_core \
--lopencv_features2d -lopencv_flann -lopencv_gpu -lopencv_highgui \
--lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree \
--lopencv_objdetect -lopencv_ocl -lopencv_photo -lopencv_stitching \
--lopencv_superres -lopencv_ts -lopencv_video -lopencv_videostab -lXtst -lXinerama -lxdo\
+-lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
+-lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo\
 -Wl,--end-group
 
-
-OBJS = $(addprefix $(OBJS_DIR)/,$(subst main.o,,$(subst .cpp,.o,$(subst $(SOURCE_DIR)/,,$(wildcard $(SOURCE_DIR)/*.cpp)))))
+CPP = $(wildcard $(SOURCE_DIR)/**/*.cpp) $(wildcard $(SOURCE_DIR)/*.cpp)
+OBJS = $(addprefix $(OBJS_DIR)/,$(patsubst %.cpp,%.o,$(notdir $(CPP))))
 TEST_OBJS = $(addprefix $(TEST_OBJS_DIR)/,gene_test.o)
 
 MAIN_O = $(OBJS_DIR)/main.o
 # HEADERS_INC = $(wildcard $(INCLUDE_DIR)/*.hpp)
 # HEADERS = $(subst $(INCLUDE_DIR)/,,$(HEADERS_INC))
-
 EXE_PATH = $(BIN_DIR)/$(EXE)
 
+print-%: ; @echo $* = $($*)
 all: $(EXE_PATH)
 # Pattern rules for object src files
 
 check: $(TEST_EXE)
 	(cd $(TEST_BIN_DIR) ; for f in * ; do ./$$f ; done)
 
-$(OBJS_DIR)/%.o: $(SOURCE_DIR)/%.cpp | $(OBJS_DIR)
+define get_cpp
+    $(filter %$(1).cpp,$(CPP))
+endef
+
+.SECONDEXPANSION:
+$(OBJS) : % : $$(call get_cpp,$$(subst .o,,$$(notdir %)))
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TEST_OBJS_DIR)/%.o: $(TEST_DIR)/%.cpp | $(TEST_DIR)
