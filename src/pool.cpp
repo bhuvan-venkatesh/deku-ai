@@ -134,3 +134,39 @@ void Pool::new_generation(){
 
 	//TODO:Backup data
 }
+
+bool Pool::save(ofstream& ofs) const{
+	ofs << innovation << "\n"
+			<< generation << "\n"
+			<< current_species << "\n"
+	 		<< current_genome << "\n"
+			<< current_frame << "\n"
+	 		<< max_fitness << "\n"
+			<< inputs << "\n" << outputs << "\n";
+
+	ofs << species.size() << "\n";
+	for(auto i = species.begin(); i != species.end(); ++i){
+		i->save(ofs);
+	}
+	return true;
+
+}
+bool Pool::load(ifstream& ifs){
+	ifs >> innovation
+		>> generation
+		>> current_species
+		>> current_genome
+		>> current_frame
+		>> max_fitness
+		>> inputs
+		>> outputs;
+	size_t stuff;
+	ifs >> stuff;
+	species.clear();
+	for(size_t i = 0; i < stuff; ++i){
+		Species temp(inputs, outputs);
+		temp.load(ifs);
+		species.push_back(temp);
+	}
+	return true;
+}

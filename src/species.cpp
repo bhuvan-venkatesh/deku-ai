@@ -37,3 +37,31 @@ Genome Species::breed_child(){
 
 	return child;
 }
+
+bool Species::save(ofstream& ofs) const{
+	ofs << top_fitness << "\n";
+	ofs << staleness 	<< "\n"
+			<< average_fitness << "\n"
+	 		<< inputs << "\n" << outputs << "\n";
+	ofs << genomes.size() << "\n";
+	for(auto i = genomes.begin(); i != genomes.end(); ++i){
+		i->save(ofs);
+	}
+	return true;
+}
+bool Species::load(ifstream& ifs){
+	ifs >> top_fitness
+			>> staleness
+			>> average_fitness
+			>> inputs
+			>> outputs;
+	genomes.clear();
+	size_t genomes_size;
+	ifs >> genomes_size;
+	for(size_t i = 0 ; i < genomes_size ; ++i ){
+		Genome temp(inputs, outputs);
+		temp.load(ifs);
+		genomes.push_back(temp);
+	}
+	return true;
+}

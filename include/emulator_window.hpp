@@ -1,5 +1,6 @@
 #ifndef EMULATOR_WINDOW_H
 #define EMULATOR_WINDOW_H
+
 extern "C" {
 #include <xdo.h>
 }
@@ -13,6 +14,7 @@ extern "C"{
 
 struct Emulator_Window{
 public:
+
   Display *disp;
 	Window root;
 	Screen* screen;
@@ -20,9 +22,11 @@ public:
 	unsigned int height;
 	int scr;
   xdo_t* xdo;
+
   static Emulator_Window* get_emulator();
   virtual ~Emulator_Window();
 private:
+
   void get_window(const char* name);
   static Emulator_Window* window;
   Emulator_Window();

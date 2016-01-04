@@ -19,7 +19,7 @@ bool Gene::save(ofstream& ofs) const {
 		ofs << out					<< "\n";
 		ofs << gene_weight	<< "\n";
 		ofs << innovation		<< "\n";
-		ofs << enabled			<< std::endl;
+		ofs << enabled			<< "\n";
 		return true;
 }
 bool Gene::load(ifstream& ifs){

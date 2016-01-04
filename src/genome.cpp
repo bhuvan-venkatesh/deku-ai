@@ -234,7 +234,7 @@ bool Genome::save(ofstream& ofs) const{
 	ofs << max_neuron << "\n";
 	ofs << global_rank << "\n";
 	ofs << inputs << "\n";
-	ofs << outputs << std::endl;
+	ofs << outputs << "\n";
 
 	ofs << mutation_chance_rates.connection	<< "\n";
 	ofs << mutation_chance_rates.disturb	<< "\n";
@@ -243,18 +243,21 @@ bool Genome::save(ofstream& ofs) const{
 	ofs << mutation_chance_rates.node	<< "\n";
 	ofs << mutation_chance_rates.enable	<< "\n";
 	ofs << mutation_chance_rates.disable	<< "\n";
-	ofs << mutation_chance_rates.step	<< std::endl;
-
-	ofs << genes.size() << "\n";
-	for(auto i = genes.begin(); i != genes.end(); ++i){
-			i->save(ofs);
-	}
+	ofs << mutation_chance_rates.step	<< "\n";
 
 	ofs << network.size() << "\n";
 	for(auto i = network.begin(); i != network.end(); ++i){
-			ofs << i->first<, "\n";
-			i->second.save();
+			ofs << i->first<< "\n";
+			i->second.save(ofs);
 	}
+
+	/*
+	ofs << genes.size() << "\n";
+	for(auto i = genes.begin(); i != genes.end(); ++i){
+			i->save(ofs);
+	}*/
+
+	return true;
 }
 
 bool Genome::load(ifstream& ifs){
@@ -274,36 +277,25 @@ bool Genome::load(ifstream& ifs){
 			>> mutation_chance_rates.disable
 			>> mutation_chance_rates.step;
 
-	size_t genes_size;
-	ifs >> genes_size;
-	genes.clear();
-	for(size_t i = 0; i < genes_size; ++i){
-			Gene temp;
-			temp.load(ifs);
-			genes.push_back(temp);
-	}
-
 	size_t network_size;
 	ifs >> network_size;
 	for(size_t i = 0; i < network_size; ++i){
 			Neuron temp;
+			int32_t position;
+			ifs >> position;
 			temp.load(ifs);
-			vector<int32_t> innovations;
-			for(size_t j = 0; j < temp.incoming.size(); ++i){
-					innovations.push_back(temp.incoming[j]->innovation)
-					delete temp.incoming[j]->innovation;
+
+			for(auto j = 0; j != temp.incoming.size(); ++j){
+					genes.push_back(*temp.incoming[j]);
+					delete temp.incoming[j]; //Free up the memory
+					temp.incoming[j] = &*(genes.end()-1);
 			}
-			temp.incoming.clear();
-			for(auto i = innovations.begin(); i != innovations.end(); ++i){
-					for(auto j = genes.begin(); j != genes.end(); ++j){
-							if(j->innovation == *i){
-								temp.incoming.push_back(&*j);
-								break;
-							}
-					}
-			}
-			genes.push_back(temp);
+
+			//We are done deserializing one neuron and linking properly
+			network[position] = temp;
 	}
+
+	return true;
 
 }
 
@@ -402,7 +394,7 @@ Genome Genome::random_gene_swap(const Genome& higher_fitness,
 		Gene gene1 = *i;
 		if(innov2.find(gene1.innovation) != innov2.end()){
 			Gene gene2 = innov2[gene1.innovation];
-			if(rand()%2==0 && gene2.enabled){
+			if(rand()%2 && gene2.enabled){
 				child.genes.push_back(gene2);
 				continue;
 			}

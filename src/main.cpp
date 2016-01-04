@@ -9,6 +9,7 @@
 #include "eye.hpp"
 
 using cv::KeyPoint;
+
 int main(){
 	int inputs = 100;
 	int outputs = 8;
