@@ -1,11 +1,18 @@
 #include "image_classifier.hpp"
 
-vector<int32_t> Image_Classifier::block_classify(const Mat& image, const vector<KeyPoint>& points){
-  vector<Point2f> points;
-  for(auto i = key.begin(); i != key.end(); ++i){
-    points.push_back(key.pt);
+Image_Classifier::Image_Classifier(int blocks_): blocks(blocks_) {
+  cluster_centers = cc;
+  max_iterations = iters;
+  epsilon = eps;
+  attempts = att;
+};
+
+vector<int32_t> Image_Classifier::block_classify(const Mat& image, const vector<KeyPoint>& keypoints){
+  vector<cv::Point2f> points;
+  for(auto i = keypoints.begin(); i != keypoints.end(); ++i){
+    points.push_back(i->pt);
   }
-  Mat lables, centers;
+  Mat labels, centers;
   double mean = kmeans(points,
                   cluster_centers,
                   labels, //Output labels

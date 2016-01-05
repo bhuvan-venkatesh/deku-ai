@@ -33,13 +33,9 @@ To measure this somehow*/
 
 Brain::Brain():
   pool(Pool(inputs, outputs)),
-  cluster_centers(15),
   previous((time_t)0),
   classifier(Image_Classifier(inputs))
 {
-  max_iterations = 100;
-  epsilon = .01;
-  attempts = 2;
 }
 
 //This is the heart of the program!
@@ -52,14 +48,14 @@ void Brain::play(){
   cv::Mat pic;
   vector<KeyPoint> keys = eye.analyze_screen(pic);
   vector<int32_t> block = classifier.block_classify(pic, keys);
-  vector<int32_t> inputs = demonize_blocks(block);
-  vector<bool> should_press = pool.evaluate(inputs);
+  vector<int32_t> inputs_ = demonize_blocks(block);
+  vector<bool> should_press = pool.evaluate(inputs_);
   send_signals(should_press);
 }
 
 vector<int32_t> Brain::demonize_blocks(const vector<int32_t>& block_classes){
     vector<int32_t> ret;
-    for(auto i = block_classes.begin(); i !- block_classes.end(); ++i){
+    for(auto i = block_classes.begin(); i != block_classes.end(); ++i){
       if(memory.find(*i) == memory.end()){
         memory[*i] = rand()%2 ? 1 : -1;
       }
@@ -93,10 +89,10 @@ void Brain::send_signals(const vector<bool>& buttons){
       case 5:
         controller.down();
         break;
-      case 4:
+      case 6:
         controller.left();
         break;
-      case 5:
+      case 7:
         controller.right();
         break;
     }

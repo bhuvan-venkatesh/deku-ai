@@ -16,12 +16,11 @@ int main(){
 	Species species(inputs, outputs);
 	Genome genome(inputs, outputs);
 	Neuron neruon;
-	Brain brain(inputs, outputs);
+	Brain brain;
 	Pool pool(inputs, outputs);
 	Gene gene;
 	Eye eye;
 	eye.draw_keypoints = true;
-	std::vector<cv::KeyPoint> points = eye.analyze_screen();
 	getchar();
 	return 0;
 }

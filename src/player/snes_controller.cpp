@@ -2,27 +2,30 @@
 #include <algorithm>
 #include <string>
 #include <fstream>      // std::ifstream
+#include <cctype>
 #define file_name "bindings.txt"
 
-inline void tolower(string& ref){
-  std::transform(ref.begin(), ref.end(), ref.begin(), ::tolower);
+inline string string_upper(const string& refe){
+  string ref(refe);
+  std::transform(ref.begin(), ref.end(), ref.begin(), ::toupper);
+  return ref;
 }
-Snes_Controller::snes_controller(const std::unordered_map<string, string>& bindings_){
-  for(auto i = bindings_.begin(); i != bindings.end(); ++i)
-    bindings[tolower(i->first)] = i->second;
+Snes_Controller::Snes_Controller(const std::unordered_map<string, string>& bindings_){
+  for(auto i = bindings_.begin(); i != bindings_.end(); ++i)
+    bindings[string_upper(i->first)] = i->second;
 }
 
-Snes_Controller::snes_controller(){
+Snes_Controller::Snes_Controller(){
   char name[32];
-  ifstream bindings_txt(file_name);
+  std::ifstream bindings_txt(file_name);
 
   while(bindings_txt.good()){
-    std::getline(name, 32);
+    bindings_txt.getline(name, 32);
     string line(name);
     auto space = line.find(" ");
     string lhs = line.substr(0, space);
     line.erase(line.begin(), line.begin()+(space+1));
-    bindings[lhs] = rhs;
+    bindings[lhs] = line;
   }
 }
 Snes_Controller& Snes_Controller::a(){
@@ -34,7 +37,7 @@ Snes_Controller& Snes_Controller::b(){
 }
 
 Snes_Controller& Snes_Controller::x(){
-    return press("X")
+    return press("X");
 }
 
 Snes_Controller& Snes_Controller::y(){

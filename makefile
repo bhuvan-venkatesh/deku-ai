@@ -16,6 +16,11 @@ CPP = $(wildcard $(SOURCE_DIR)/**/*.cpp) $(wildcard $(SOURCE_DIR)/*.cpp)
 OBJS = $(addprefix $(OBJS_DIR)/,$(patsubst %.cpp,%.o,$(notdir $(CPP))))
 TEST_OBJS = $(addprefix $(TEST_OBJS_DIR)/,gene_test.o)
 
+# HPP recursive directories
+
+HPP = $(dir $(wildcard $(INCLUDE_DIR)/*) $(wildcard $(INCLUDE_DIR)/**/*))
+H_INCLUDES = $(addprefix -I,$(sort $(HPP)) $(INCLUDE_DIR))
+
 # Main hardcoded paths
 
 EXE_PATH = $(BIN_DIR)/$(EXE)
@@ -29,8 +34,8 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -O2
-LDFLAGS = -std=c++11 -I$(INCLUDE_DIR)/ -L/usr/lib -Wl,--start-group -lcairo \
+CXXFLAGS = -std=c++11 $(H_INCLUDES) -O2
+LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Wl,--start-group -lcairo \
 -lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
 -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo\
 -Wl,--end-group
@@ -93,3 +98,5 @@ clean:
 
 run:
 	./$(EXE_PATH)
+
+print-%: ; @echo $* = $($*)

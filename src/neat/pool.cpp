@@ -14,7 +14,7 @@ Pool::Pool(int32_t inputs_, int32_t outputs_):
 		//BI
 		Species first_species(inputs_, outputs_);
 		Genome first_genome(inputs_, outputs_);
-		first_species.push_back(first_genome);
+		first_species.genomes.push_back(first_genome);
 		species.push_back(first_species);
 }
 int32_t Pool::innovate(){
@@ -139,11 +139,11 @@ void Pool::new_generation(){
 }
 
 vector<bool> Pool::evaluate(const vector<int32_t>& inputs){
-	
+
 	Species& current_spec = species[current_species];
 	Genome& current_gen = current_spec.genomes[current_genome];
 	current_gen.generate_network();
-	return current_gen.evaluate(inputs)
+	return current_gen.evaluate(inputs);
 }
 
 

@@ -1,18 +1,7 @@
-#include <iostream>
-#include <cstdlib>
-#include <string>
-#include <vector>
-#include <sstream>
-#include <ostream>
-#include <iterator>
-
+#include "key_press.hpp"
 extern "C" {
 #include <xdo.h>
 }
-#include "emulator_window.hpp"
-
-using std::vector;
-using std::string;
 
 string implode(const vector<string>& elements, const char* separator){
 	switch (elements.size())

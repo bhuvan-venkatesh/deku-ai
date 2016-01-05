@@ -20,7 +20,7 @@ private:
 	Eye eye;
 	Snes_Controller controller;
 	Image_Classifier classifier;
-
+	time_t previous;
 	unordered_map<uint32_t,int32_t> memory;
 };
 

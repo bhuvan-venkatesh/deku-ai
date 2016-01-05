@@ -31,6 +31,7 @@ std::vector<KeyPoint> Eye::analyze_screen(cv::Mat& ret){
     ret = convert_image_surface_to_mat(img_surf, width, height);
     vector<KeyPoint> points = analyze_keypoints(ret);
     if(draw_keypoints){
+        cv::Mat img_1 = ret;
         cv::Mat img_keypoints_1;
         drawKeypoints( img_1, points, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT );
         imshow("Keypoints 1", img_keypoints_1 );
