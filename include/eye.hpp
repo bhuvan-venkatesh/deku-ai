@@ -20,9 +20,8 @@ using namespace cv;
 struct Eye{
 public:
 	Eye();
-	std::vector<cv::KeyPoint> analyze_screen();
+	std::vector<cv::KeyPoint> analyze_screen(cv::Mat& ret);
 	bool draw_keypoints;
-	cv::Mat img_1;
 
 private:
 	Emulator_Window* window;

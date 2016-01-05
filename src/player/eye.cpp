@@ -21,15 +21,15 @@ Eye::Eye(){
     draw_keypoints = false;
 }
 
-std::vector<KeyPoint> Eye::analyze_screen(){
+std::vector<KeyPoint> Eye::analyze_screen(cv::Mat& ret){
     const unsigned int width = window->width, height = window->height;
 
     cairo_surface_t* x11_surf = cairo_xlib_surface_create(window->disp, window->root,
                                                           DefaultVisual(window->disp, window->scr),
                                                           width, height);
     cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf, width, height);
-    img_1 = convert_image_surface_to_mat(img_surf, width, height);
-    vector<KeyPoint> points = analyze_keypoints(img_1);
+    ret = convert_image_surface_to_mat(img_surf, width, height);
+    vector<KeyPoint> points = analyze_keypoints(ret);
     if(draw_keypoints){
         cv::Mat img_keypoints_1;
         drawKeypoints( img_1, points, img_keypoints_1, Scalar::all(-1), DrawMatchesFlags::DEFAULT );

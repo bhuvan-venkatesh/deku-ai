@@ -1,0 +1,13 @@
+A Z
+B X
+X A
+Y S
+R Q
+L W
+UP Up
+DOWN Down
+LEFT Left
+RIGHT Right
+START Return
+SELECT P
+LOAD F
