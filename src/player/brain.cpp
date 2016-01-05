@@ -26,15 +26,80 @@ smarter on the input nodes -- communicating with the brain.
 It is also going to have to be highly randomized but highly
 sticky in order to latch on to right solutions we are going to need a metric
 To measure this somehow*/
-#include "eye.hpp"
+
 #include "brain.hpp"
+#define inputs 256
+#define outputs 8
 
+Brain::Brain():
+  pool(Pool(inputs, outputs)),
+  cluster_centers(15),
+  previous((time_t)0),
+  classifier(Image_Classifier(inputs))
+{
+  max_iterations = 100;
+  epsilon = .01;
+  attempts = 2;
+}
+
+//This is the heart of the program!
 void Brain::play(){
-  vector<KeyPoint> key = eye.analyze_screen();
-  cv::Mat pic = eye.img_1;
-  vector<Point2f> points;
-  for(auto i = key.begin(); i != key.end(); ++i){
-    
+  //TODO change to a lower priority thread
+  if(time(NULL)-previous >= 3600*5){ //Save every 5 minutes
+    ofstream stream("NEAT.dat");
+    pool.save(stream);
   }
+  cv::Mat pic;
+  vector<KeyPoint> keys = eye.analyze_screen(pic);
+  vector<int32_t> block = classifier.block_classify(pic, keys);
+  vector<int32_t> inputs = demonize_blocks(block);
+  vector<bool> should_press = pool.evaluate(inputs);
+  send_signals(should_press);
+}
 
+vector<int32_t> Brain::demonize_blocks(const vector<int32_t>& block_classes){
+    vector<int32_t> ret;
+    for(auto i = block_classes.begin(); i !- block_classes.end(); ++i){
+      if(memory.find(*i) == memory.end()){
+        memory[*i] = rand()%2 ? 1 : -1;
+      }
+      ret.push_back(memory[*i] * (*i));
+    }
+    return ret;
+}
+
+//TODO: Change this more programatically
+void Brain::send_signals(const vector<bool>& buttons){
+  for(size_t i = 0; i < buttons.size(); ++i){
+    if(!buttons[i]){
+      continue;
+    }
+    switch(i){
+      case 0:
+        controller.a();
+        break;
+      case 1:
+        controller.b();
+        break;
+      case 2:
+        controller.x();
+        break;
+      case 3:
+        controller.y();
+        break;
+      case 4:
+        controller.up();
+        break;
+      case 5:
+        controller.down();
+        break;
+      case 4:
+        controller.left();
+        break;
+      case 5:
+        controller.right();
+        break;
+    }
+  }
+  controller.execute();
 }

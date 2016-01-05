@@ -5,13 +5,17 @@ int32_t Pool::innovation = 0;
 
 Pool::Pool(int32_t inputs_, int32_t outputs_):
 	generation(0),
-	current_species(1),
-	current_genome(1),
+	current_species(0),
+	current_genome(0),
 	current_frame(0),
 	max_fitness(0),
 	inputs(inputs_),
 	outputs(outputs_){
 		//BI
+		Species first_species(inputs_, outputs_);
+		Genome first_genome(inputs_, outputs_);
+		first_species.push_back(first_genome);
+		species.push_back(first_species);
 }
 int32_t Pool::innovate(){
 	return ++Pool::innovation;
@@ -132,8 +136,16 @@ void Pool::new_generation(){
 	}
 	generation++;
 
-	//TODO:Backup data
 }
+
+vector<bool> Pool::evaluate(const vector<int32_t>& inputs){
+	
+	Species& current_spec = species[current_species];
+	Genome& current_gen = current_spec.genomes[current_genome];
+	current_gen.generate_network();
+	return current_gen.evaluate(inputs)
+}
+
 
 bool Pool::save(ofstream& ofs) const{
 	ofs << innovation << "\n"

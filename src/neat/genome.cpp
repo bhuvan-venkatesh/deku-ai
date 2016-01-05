@@ -12,8 +12,9 @@ Genome::Genome(int32_t inputs_, int32_t outputs_):
 	 global_rank(0),
 	 inputs(inputs_),
 	 outputs(outputs_){
+		 //generate_network();
 	 	//BI
-	 }
+}
 
 Genome Genome::basic_genome(int32_t inputs, int32_t outputs){
 	Genome return_value(inputs, outputs);

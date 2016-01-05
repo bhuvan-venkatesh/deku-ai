@@ -21,14 +21,21 @@ public:
 	Pool& operator=(const Pool& other) = default;
 	Pool& operator=(Pool&& other) = default;
 
-	vector<Species> species;
 	static int32_t innovation; //Serves as a counter
+
+	vector<bool> evaluate(const vector<int32_t>& inputs);
+
+	bool save(ofstream& ofs) const;
+	bool load(ifstream& ifs);
+private:
+	vector<Species> species;
 	int32_t generation;
 	int32_t current_species;
 	int32_t current_genome;
 	int32_t current_frame;
 	int32_t max_fitness;
 	int32_t inputs, outputs;
+
 
 	void rank_globally();
 	int32_t calculate_average_fitness();
@@ -37,10 +44,6 @@ public:
 	void remove_weak_species();
 	void add_to_species(const Genome& child);
 	void new_generation();
-
-	bool save(ofstream& ofs) const;
-	bool load(ifstream& ifs);
-private:
 };
 
 
