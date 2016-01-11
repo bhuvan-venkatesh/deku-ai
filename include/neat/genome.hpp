@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include <functional>
 
 #include "neuron.hpp"
@@ -16,11 +16,11 @@
 
 
 
-typedef std::unordered_map<std::int32_t,Neuron> NetworkMap;
+typedef std::map<std::int32_t,Neuron> NetworkMap;
 //In case there is a need to change later
 using std::vector;
 using std::int32_t;
-using std::unordered_map;
+using std::map;
 using std::string;
 
 namespace action_chances{

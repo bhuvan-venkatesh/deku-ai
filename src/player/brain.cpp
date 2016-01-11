@@ -35,11 +35,13 @@ void Brain::play(){
 
 //TODO: Change this more programatically
 void Brain::send_signals(const vector<bool>& buttons){
+  bool pressed = false;
   for(size_t i = 0; i < buttons.size(); ++i){
     if(!buttons[i]){
       continue;
     }
     switch(i){
+      pressed = true;
       case 0:
         controller.a();
         break;
@@ -66,5 +68,7 @@ void Brain::send_signals(const vector<bool>& buttons){
         break;
     }
   }
+  if(!pressed)
+    controller.right();
   controller.execute();
 }

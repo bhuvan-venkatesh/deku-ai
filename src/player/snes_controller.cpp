@@ -10,10 +10,6 @@ inline string string_upper(const string& refe){
   std::transform(ref.begin(), ref.end(), ref.begin(), ::toupper);
   return ref;
 }
-Snes_Controller::Snes_Controller(const std::unordered_map<string, string>& bindings_){
-  for(auto i = bindings_.begin(); i != bindings_.end(); ++i)
-    bindings[string_upper(i->first)] = i->second;
-}
 
 Snes_Controller::Snes_Controller(){
   bindings["A"] = "Z";
@@ -101,7 +97,7 @@ void Snes_Controller::execute(){
     buffer.clear();
 }
 
-Snes_Controller& Snes_Controller::press(const string& stuff){
+Snes_Controller& Snes_Controller::press(string stuff){
   buffer.push_back(bindings[stuff]);
   return *this;
 }

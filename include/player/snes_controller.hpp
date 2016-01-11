@@ -1,12 +1,11 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include "key_press.hpp"
 #define buffer_size 16
 
 class Snes_Controller{
 public:
-  Snes_Controller(const std::unordered_map<string, string>& bindings_);
   Snes_Controller();
   Snes_Controller& a();
   Snes_Controller& b();
@@ -34,7 +33,7 @@ private:
     "b":"x" //All commands are uppercase
   }
   */
-  std::unordered_map<string, string> bindings;
+  std::map<string, string> bindings;
   vector<string> buffer;
-  Snes_Controller& press(const string& stuff);
+  Snes_Controller& press(string stuff);
 };

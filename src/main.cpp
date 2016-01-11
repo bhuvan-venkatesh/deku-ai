@@ -7,10 +7,7 @@ int main(){
 	Brain brain;
 	brain.initialize_run();
 	while(true){
-		std::cout<<1<<std::endl;
-		brain.controller.a();
-		std::cout<<1<<std::endl;
-		brain.controller.execute();
+		brain.play();
 	}
 	getchar();
 	return 0;

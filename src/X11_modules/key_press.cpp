@@ -1,4 +1,5 @@
 #include "key_press.hpp"
+#include <cassert>
 extern "C" {
 #include <xdo.h>
 }
@@ -27,13 +28,7 @@ void press_keys(const vector<string>& stuff){
 	static Emulator_Window* tool = NULL;
 	if( !tool )
 			tool = Emulator_Window::get_emulator();
+	assert(tool != NULL);
   string command = implode(stuff, "+");
 	int id = xdo_send_keysequence_window(tool->xdo, tool->root, command.c_str(), 0 );
-}
-
-void press_keys(const string& command){
-	static Emulator_Window* tool = NULL;
-	if( !tool )
-			tool = Emulator_Window::get_emulator();
-	xdo_send_keysequence_window(tool->xdo, tool->root, command.c_str(), 0 );
 }
