@@ -30,3 +30,10 @@ void press_keys(const vector<string>& stuff){
   string command = implode(stuff, "+");
 	int id = xdo_send_keysequence_window(tool->xdo, tool->root, command.c_str(), 0 );
 }
+
+void press_keys(const string& command){
+	static Emulator_Window* tool = NULL;
+	if( !tool )
+			tool = Emulator_Window::get_emulator();
+	xdo_send_keysequence_window(tool->xdo, tool->root, command.c_str(), 0 );
+}

@@ -1,5 +1,4 @@
-#ifndef EYE_H
-#define EYE_H
+#pragma once
 
 extern "C"{
 #include <cairo/cairo.h>
@@ -15,7 +14,7 @@ extern "C"{
 #include "opencv2/nonfree/nonfree.hpp"
 #include "emulator_window.hpp"
 
-using namespace cv;
+using cv::Mat;
 
 struct Eye{
 public:
@@ -27,7 +26,5 @@ private:
 	Emulator_Window* window;
 
 	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);
-	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height, Mat& ret);
+	void convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height, Mat& ret);
 };
-
-#endif

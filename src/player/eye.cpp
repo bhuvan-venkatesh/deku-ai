@@ -27,7 +27,7 @@ cv::Mat Eye::analyze_screen(){
                                                           width, height);
     cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf, width, height);
     Mat ret;
-    convert_image_surface_to_mat(img_surf, width, ret);
+    convert_image_surface_to_mat(img_surf, width, height, ret);
 
     //Depreciated
     /*
@@ -61,7 +61,7 @@ cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf,
 
 }
 
-cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf, const unsigned int& width, const unsigned int& height, Mat& ret){
+void Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf, const unsigned int& width, const unsigned int& height, Mat& ret){
     unsigned char* ptr = cairo_image_surface_get_data(img_surf);
 
     if(!ptr){
@@ -89,5 +89,5 @@ cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf, const unsig
         }
     }
 
-    return img_1;
+    ret = img_1;
 }

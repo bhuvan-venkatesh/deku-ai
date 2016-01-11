@@ -34,10 +34,10 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 $(H_INCLUDES) -O2
-LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Wl,--start-group -lcairo \
+CXXFLAGS = -std=c++11 $(H_INCLUDES) -O2 -Weverything -pedantic -Wno-c++98-compat -fcolor-diagnostics
+LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Weverything -pedantic -Wl,--start-group -lcairo \
 -lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
--lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo\
+-lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo -lopencv_calib3d\
 -Wl,--end-group
 
 # All only makes the executable
@@ -74,14 +74,13 @@ $(TEST_OBJS_DIR)/%.o: $(TEST_DIR)/%.cpp | $(TEST_DIR)
 $(TEST_BIN_DIR)/%: $(OBJS) $(TEST_OBJS_DIR)/%.o | $(TEST_BIN_DIR)
 	$(LD) $^ $(LDFLAGS) -o $@
 
-# Precautionary directory makedirs
+# Precautionary directory makedirs in event directory does not exist
 
 $(OBJS_DIR):
 	mkdir $(OBJS_DIR)
 
 $(TEST_DIR):
-	mkdir $(TEST_DIR)
-	mkdir $(TEST_OBJS_DIR)
+	mkdir $(TEST_DIR) || mkdir $(TEST_OBJS_DIR)
 
 $(TEST_BIN_DIR):
 	mkdir $(TEST_BIN_DIR)
@@ -93,10 +92,17 @@ $(TEST_BIN_DIR):
 check: $(TEST_EXE)
 	(cd $(TEST_BIN_DIR) ; for f in * ; do ./$$f ; done)
 
+# Removes Object Files
+
 clean:
 	(cd $(OBJS_DIR); rm -rf *)
+
+# Runs the executable
 
 run:
 	./$(EXE_PATH)
 
-print-%: ; @echo $* = $($*)
+# Special print command to print the value of the variable
+# Useful for makefile debugging, uncomment and set phony as needed
+
+# print-%: ; @echo $* = $($*)

@@ -21,5 +21,6 @@ string implode(const vector<string>& elements, const char* separator);
 * Special Keys = "Alt" "Ctrl_L" "Shift_L"
 */
 void press_keys(const vector<string>& stuff);
+void press_keys(const string& stuff);
 
 #endif

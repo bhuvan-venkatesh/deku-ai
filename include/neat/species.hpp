@@ -1,5 +1,4 @@
-#ifndef SPECIES_H
-#define SPECIES_H
+#pragma once
 
 
 #include <cstdint>
@@ -42,6 +41,7 @@ public:
 
 	bool save(ofstream& ofs) const;
 	bool load(ifstream& ifs);
+	virtual ~Species() {}
 
 	void calculate_average_fitness();
 	Genome breed_child();
@@ -53,5 +53,3 @@ public:
 	Species& operator= (Species&& other) = default;
 private:
 };
-
-#endif

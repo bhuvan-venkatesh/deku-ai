@@ -1,5 +1,4 @@
-#ifndef NEURON_H
-#define NEURON_H
+#pragma once
 
 #include <vector>
 #include <unordered_map>
@@ -19,11 +18,10 @@ struct Neuron: public Serial{
 	bool save(ofstream& ofs) const;
 	bool load(ifstream& ifs);
 
-	Neuron(): weight(0) {};
+	Neuron(): weight(0) {}
 	Neuron(const Neuron& other) = default;
 	Neuron(Neuron&& other) = default;
 	Neuron& operator= (const Neuron& other) = default;
 	Neuron& operator= (Neuron&& other) = default;
+	virtual ~Neuron() {}
 };
-
-#endif

@@ -1,5 +1,5 @@
-#ifndef GENOME_H
-#define GENOME_H
+#pragma once
+
 #include <cstdint>
 #include <vector>
 #include <unordered_map>
@@ -25,15 +25,15 @@ using std::string;
 
 namespace action_chances{
 		const static float
-			mutation_connect 	= 0.25,
-			disturb 			= 0.9,
-			link 				= 2.0,
-			node 				= 0.5,
-			bias_mutation 		= 0.4,
-			step_size 			= 0.1,
-			disable_mutation 	= 0.4,
-			enable_mutation 	= 0.2;
-	};
+			mutation_connect 	= (float)0.25,
+			disturb 					= (float)0.9,
+			link 							= (float)2.0,
+			node 							= (float)0.5,
+			bias_mutation 		= (float)0.4,
+			step_size 				= (float)0.1,
+			disable_mutation 	= (float)0.4,
+			enable_mutation 	= (float)0.2;
+	}
 
 class Genome: public Serial{
 public:
@@ -103,6 +103,7 @@ public:
 
 	bool save(ofstream& ofs) const;
 	bool load(ifstream& ifs);
+	virtual ~Genome() {}
 private:
 	void reset_network_neurons();
 	void connect_neurons();
@@ -120,5 +121,3 @@ private:
 	template<typename T>
 	void mutate_rate(T& rate);
 };
-
-#endif

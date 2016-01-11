@@ -4,13 +4,13 @@ extern "C" {
 }
 #define emulator_name "ZSNES"
 #define screen_default NULL
+#include <cstring>
 
 Emulator_Window* Emulator_Window::window = NULL;
 
 Emulator_Window::Emulator_Window(){
     disp = XOpenDisplay(screen_default);
     scr = DefaultScreen(disp);
-
     get_window(emulator_name);
 }
 
@@ -18,9 +18,10 @@ void Emulator_Window::get_window(const char* name){
     xdo = xdo_new(screen_default);
     if(!xdo){
         std::cerr<<"Xdo Allocation Failed"<<std::endl;
-        throw; //Okay in destructor
+        throw; //Okay in constructor
     }
     xdo_search_t search;
+    memset(&search, 0, sizeof(xdo_search_t));
 
     search.max_depth = -1;
     search.require = xdo_search::SEARCH_ANY;
@@ -29,9 +30,11 @@ void Emulator_Window::get_window(const char* name){
 
     Window *ret;
     unsigned int len;
+    std::cout<<1;
     xdo_search_windows(xdo, &search, &ret, &len );
-    std::cout<<"sdfas"<<std::endl;
+    std::cout<<2;
     if(len != 1){
+      std::cout<<len<<"\n";
         std::cerr<<"More than one match, be more specific"<<std::endl;
         throw;
     }

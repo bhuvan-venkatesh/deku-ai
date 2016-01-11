@@ -184,9 +184,10 @@ bool Pool::load(ifstream& ifs){
 }
 
 void Pool::set_top(){
-	int32_t maxfitness = 0, maxs, maxg
-	for(auto s = species.begin(), size_t s_ = 0; s != species.end(); ++s, ++s_){
-		for(auto g = s->genomes.begin(),size_t g_ = 0; g != s->genomes.end(); ++g, ++g_){
+	int32_t maxfitness = 0, maxs, maxg;
+	size_t s_ = 0, g_ = 0;
+	for(auto s = species.begin(); s != species.end(); ++s, ++s_){
+		for(auto g = s->genomes.begin(); g != s->genomes.end(); ++g, ++g_){
 			if(g->fitness > maxfitness){
 				maxfitness = g->fitness;
 				maxs = s_;
@@ -195,20 +196,20 @@ void Pool::set_top(){
 		}
 	}
 
-	current_spec = maxs
-	current_genome = maxg
-	max_fitness = maxfitness
+	current_species = maxs;
+	current_genome = maxg;
+	max_fitness = maxfitness;
 	current_frame++;
 }
 
 void Pool::next_genome(){
 	current_genome++;
-	if(current_genome) > species[current_species].genomes.size(){
+	if(current_genome > species[current_species].genomes.size()){
 		current_genome = 0;
 		current_species++;
-		if(current_species > species.size(){
-			new_generation()
+		if(current_species > species.size()){
 			current_species = 0;
+			new_generation();
 		}
 	}
 }

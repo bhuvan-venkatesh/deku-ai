@@ -16,17 +16,32 @@ Snes_Controller::Snes_Controller(const std::unordered_map<string, string>& bindi
 }
 
 Snes_Controller::Snes_Controller(){
+  bindings["A"] = "Z";
+  bindings["B"] = "X";
+  bindings["X"] = "A";
+  bindings["Y"] = "S";
+  bindings["R"] = "Q";
+  bindings["L"] = "W";
+  bindings["UP"] = "Up";
+  bindings["DOWN"] = "Down";
+  bindings["LEFT"] = "Left";
+  bindings["RIGHT"] = "Right";
+  bindings["START"] = "Return";
+  bindings["SELECT"] = "P";
+  bindings["LOAD"] = "F";
+  /*
   char name[32];
   std::ifstream bindings_txt(file_name);
 
   while(bindings_txt.good()){
     bindings_txt.getline(name, 32);
     string line(name);
+    std::cout<<line<<std::endl;
     auto space = line.find(" ");
     string lhs = line.substr(0, space);
     line.erase(line.begin(), line.begin()+(space+1));
     bindings[lhs] = line;
-  }
+  }*/
 }
 Snes_Controller& Snes_Controller::a(){
     return press("A");
@@ -76,7 +91,7 @@ Snes_Controller& Snes_Controller::select(){
     return press("SELECT");
 }
 
-void load_state(){
+void Snes_Controller::load_state(){
   press("LOAD");
   execute();
 }

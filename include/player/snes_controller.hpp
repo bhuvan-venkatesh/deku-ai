@@ -1,5 +1,5 @@
-#ifndef SNES_CONTROLLER_H
-#define SNES_CONTROLLER_H
+#pragma once
+
 #include <unordered_map>
 #include "key_press.hpp"
 #define buffer_size 16
@@ -38,5 +38,3 @@ private:
   vector<string> buffer;
   Snes_Controller& press(const string& stuff);
 };
-
-#endif

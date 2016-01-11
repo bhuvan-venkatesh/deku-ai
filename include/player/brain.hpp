@@ -1,5 +1,5 @@
-#ifndef BRAIN_H
-#define BRAIN_H
+#pragma once
+
 #include <cstdint>
 #include <unordered_map>
 
@@ -15,15 +15,11 @@ public:
 	void initialize_run();
 	void play();
 	void send_signals(const vector<bool>& buttons);
+	Snes_Controller controller;
 private:
 	Pool pool;
 	Eye eye;
-	Snes_Controller controller;
 	Image_Classifier classifier;
 	int rightmost;
 	int timeout;
 };
-
-
-
-#endif

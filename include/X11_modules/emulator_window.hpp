@@ -22,6 +22,7 @@ public:
 	unsigned int height;
 	int scr;
   xdo_t* xdo;
+  char slop[4];
 
   static Emulator_Window* get_emulator();
   virtual ~Emulator_Window();

@@ -1,5 +1,5 @@
-#ifndef POOL_H
-#define POOL_H
+#pragma once
+
 #include <cstdint>
 #include <unordered_map>
 #include "species.hpp"
@@ -31,6 +31,16 @@ public:
 	void set_top();
 	void next_genome();
 	bool fitness_measured() const;
+	inline Genome& top_genome() {
+		return species[current_species].genomes[current_genome];
+	}
+
+	inline const Genome& top_genome() const {
+		return species[current_species].genomes[current_genome];
+	}
+	inline void reset_frame() {
+		current_frame = 0;
+	}
 private:
 	vector<Species> species;
 	int32_t generation;
@@ -49,6 +59,3 @@ private:
 	void add_to_species(const Genome& child);
 	void new_generation();
 };
-
-
-#endif
