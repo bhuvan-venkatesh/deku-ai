@@ -252,11 +252,10 @@ bool Genome::save(ofstream& ofs) const{
 			i->second.save(ofs);
 	}
 
-	/*
 	ofs << genes.size() << "\n";
 	for(auto i = genes.begin(); i != genes.end(); ++i){
 			i->save(ofs);
-	}*/
+	}
 
 	return true;
 }
@@ -286,19 +285,22 @@ bool Genome::load(ifstream& ifs){
 			ifs >> position;
 			temp.load(ifs);
 
-			for(auto j = 0; j != temp.incoming.size(); ++j){
-					genes.push_back(*temp.incoming[j]);
-					delete temp.incoming[j]; //Free up the memory
-					temp.incoming[j] = &*(genes.end()-1);
-			}
-
 			//We are done deserializing one neuron and linking properly
 			network[position] = temp;
+	}
+
+	size_t genes_size;
+	ifs >> genes_size;
+	for(size_t i = 0; i < genes_size; ++i){
+			Gene temp;
+			temp.load(ifs);
+			genes.push_back(temp);
 	}
 
 	return true;
 
 }
+
 
 /***************************************************
 
@@ -328,11 +330,12 @@ void Genome::reset_network_neurons(){
 }
 
 void Genome::connect_neurons(){
-	for(auto i = genes.begin(); i != genes.end(); ++i){
-		if(i->is_enabled()){
-			initialize_network_neuron(i->get_out_neuron());
-			network[i->get_out_neuron()].incoming.push_back(&*i);
-			initialize_network_neuron(i->get_into_neuron());
+	for(auto j = 0; j != genes.size(); ++j){
+		Gene& i = genes[j];
+		if(i.is_enabled()){
+			initialize_network_neuron(i.get_out_neuron());
+			network[i.get_out_neuron()].incoming.push_back(j);
+			initialize_network_neuron(i.get_into_neuron());
 		}
 	}
 }
@@ -361,15 +364,13 @@ void Genome::evaluate_network(){
 
 	for(auto& pair : network){
 		Neuron& current = pair.second;
-		if(current.incoming.size() > 0){
-			double sum = 0;
-			for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
-				++incoming_gene){
-				sum += (*incoming_gene)->get_weight() *
-						network[(*incoming_gene)->get_into_neuron()].weight;
-			}
-			current.weight = current.sigmoid(sum);
+		double sum = 0;
+		for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
+			++incoming_gene){
+				Gene& ref = genes[(*incoming_gene)];
+			sum += ref.get_weight() * network[ref.get_into_neuron()].weight;
 		}
+		current.weight = current.sigmoid(sum);
 	}
 }
 

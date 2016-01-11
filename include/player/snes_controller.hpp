@@ -23,6 +23,7 @@ public:
 
   Snes_Controller& start();
   Snes_Controller& select();
+  void load_state();
 
   void execute();
 

@@ -9,7 +9,7 @@ bool Neuron::save(ofstream& ofs) const{
 	ofs << weight << "\n";
 	ofs << incoming.size() << "\n";
 	for(auto i = incoming.begin(); i != incoming.end();++i){
-		ofs << (*i)->save(ofs) << "\n";
+		ofs << (*i) << "\n";
 	}
 	return true;
 }
@@ -18,9 +18,9 @@ bool Neuron::load(ifstream& ifs) {
 	size_t incoming_size;
 	ifs >> incoming_size;
 	for(size_t i = 0; i < incoming_size; ++i){
-		Gene* regret = new Gene();
-		regret->load(ifs);
-		incoming.push_back(regret);
+		uint32_t temp;
+		ifs >> temp;
+		incoming.push_back(temp);
 	}
 	return true;
 }

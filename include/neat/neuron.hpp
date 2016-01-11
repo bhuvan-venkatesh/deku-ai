@@ -11,7 +11,7 @@ using std::vector;
 using std::int32_t;
 
 struct Neuron: public Serial{
-	vector<Gene*> incoming;
+	vector<int32_t> incoming;
 	double weight;
 
 	double sigmoid(const double& x) const;

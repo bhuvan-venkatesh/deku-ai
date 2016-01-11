@@ -17,18 +17,20 @@ Ptr<FeatureDetector> surf = FeatureDetector::create("SURF");
 //ASSUMES default dislay
 Eye::Eye(){
     window = Emulator_Window::get_emulator();
-    detector = FeatureDetector::create(feature_detector_name);
-    draw_keypoints = false;
 }
 
-std::vector<KeyPoint> Eye::analyze_screen(cv::Mat& ret){
+cv::Mat Eye::analyze_screen(){
     const unsigned int width = window->width, height = window->height;
 
     cairo_surface_t* x11_surf = cairo_xlib_surface_create(window->disp, window->root,
                                                           DefaultVisual(window->disp, window->scr),
                                                           width, height);
     cairo_surface_t* img_surf = convert_xlib_to_image_surface(x11_surf, width, height);
-    ret = convert_image_surface_to_mat(img_surf, width, height);
+    Mat ret;
+    convert_image_surface_to_mat(img_surf, width, ret);
+
+    //Depreciated
+    /*
     vector<KeyPoint> points = analyze_keypoints(ret);
     if(draw_keypoints){
         cv::Mat img_1 = ret;
@@ -37,12 +39,13 @@ std::vector<KeyPoint> Eye::analyze_screen(cv::Mat& ret){
         imshow("Keypoints 1", img_keypoints_1 );
         waitKey(0);
     }
-
+    */
     cairo_surface_destroy(x11_surf);
     cairo_surface_destroy(img_surf);
     x11_surf = NULL;
     img_surf = NULL;
-    return points;
+
+    return ret;
 }
 
 cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf,
@@ -58,7 +61,7 @@ cairo_surface_t* Eye::convert_xlib_to_image_surface( cairo_surface_t* x11_surf,
 
 }
 
-cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height){
+cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf, const unsigned int& width, const unsigned int& height, Mat& ret){
     unsigned char* ptr = cairo_image_surface_get_data(img_surf);
 
     if(!ptr){
@@ -87,12 +90,4 @@ cv::Mat Eye::convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsign
     }
 
     return img_1;
-}
-
-std::vector<KeyPoint> Eye::analyze_keypoints(const cv::Mat& img_1){
-    std::vector<KeyPoint> keypoints_1;
-    Mat img_keypoints_1;
-
-    detector->detect( img_1, keypoints_1 );
-    return keypoints_1;
 }

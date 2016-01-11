@@ -11,15 +11,22 @@ class Image_Classifier{
 public:
   Image_Classifier(int blocks_);
 
-  vector<int32_t> block_classify(const Mat& image, const vector<KeyPoint>& points);
+  void load_templates();
+  void detect_mario(const Mat& img_scene, vector<int32_t>& ret, const int& width, const int& height);
+  vector<int32_t> block_classify(const Mat& image);
+
+  float rightmost;
 
 private:
   int blocks; //Has to be a square number
+  int side;
   vector<Point2f> prev;
-	int cluster_centers;
-	int max_iterations;
-  double epsilon;
-  int attempts;
+  vector<Mat> templates;
+
+  Ptr<FeatureDetector> detector;
+  Ptr<FeatureDetector> harris;
+  SiftDescriptorExtractor extractor;
+  FlannBasedMatcher matcher;
 };
 
 #endif

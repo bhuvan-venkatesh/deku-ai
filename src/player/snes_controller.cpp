@@ -71,8 +71,14 @@ Snes_Controller& Snes_Controller::left_trigger(){
 Snes_Controller& Snes_Controller::start(){
     return press("START");
 }
+
 Snes_Controller& Snes_Controller::select(){
     return press("SELECT");
+}
+
+void load_state(){
+  press("LOAD");
+  execute();
 }
 
 void Snes_Controller::execute(){

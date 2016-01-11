@@ -20,16 +20,14 @@ using namespace cv;
 struct Eye{
 public:
 	Eye();
-	std::vector<cv::KeyPoint> analyze_screen(cv::Mat& ret);
+	cv::Mat analyze_screen();
 	bool draw_keypoints;
 
 private:
 	Emulator_Window* window;
-	Ptr<FeatureDetector> detector;
 
 	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);
-	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height);
-	std::vector<cv::KeyPoint> analyze_keypoints(const cv::Mat& img_1);
+	cv::Mat convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height, Mat& ret);
 };
 
 #endif

@@ -182,3 +182,36 @@ bool Pool::load(ifstream& ifs){
 	}
 	return true;
 }
+
+void Pool::set_top(){
+	int32_t maxfitness = 0, maxs, maxg
+	for(auto s = species.begin(), size_t s_ = 0; s != species.end(); ++s, ++s_){
+		for(auto g = s->genomes.begin(),size_t g_ = 0; g != s->genomes.end(); ++g, ++g_){
+			if(g->fitness > maxfitness){
+				maxfitness = g->fitness;
+				maxs = s_;
+				maxg = g_;
+			}
+		}
+	}
+
+	current_spec = maxs
+	current_genome = maxg
+	max_fitness = maxfitness
+	current_frame++;
+}
+
+void Pool::next_genome(){
+	current_genome++;
+	if(current_genome) > species[current_species].genomes.size(){
+		current_genome = 0;
+		current_species++;
+		if(current_species > species.size(){
+			new_generation()
+			current_species = 0;
+		}
+	}
+}
+bool Pool::fitness_measured() const{
+	return species[current_species].genomes[current_genome].fitness != 0;
+}

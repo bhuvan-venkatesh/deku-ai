@@ -38,30 +38,29 @@ Brain::Brain():
 {
 }
 
+void Brain::initialize_run(){
+  	controller.load_state();
+  	rightmost = 0;
+  	pool.current_frame = 0;
+  	timeout = timeout_constant;
+    controller.execute();
+
+  	auto& genome = pool.species[pool.current_species].genomes[pool.current_genome];
+    genome.generate_network();
+  	play();
+}
+
 //This is the heart of the program!
 void Brain::play(){
   //TODO change to a lower priority thread
-  if(time(NULL)-previous >= 3600*5){ //Save every 5 minutes
+  /*
     ofstream stream("NEAT.dat");
-    pool.save(stream);
-  }
-  cv::Mat pic;
-  vector<KeyPoint> keys = eye.analyze_screen(pic);
+    pool.save(stream);*/
+  cv::Mat pic = eye.analyze_screen(pic);
   vector<int32_t> block = classifier.block_classify(pic, keys);
-  vector<int32_t> inputs_ = demonize_blocks(block);
-  vector<bool> should_press = pool.evaluate(inputs_);
+  rightmost = classifier.rightmost;
+  vector<bool> should_press = pool.evaluate(block);
   send_signals(should_press);
-}
-
-vector<int32_t> Brain::demonize_blocks(const vector<int32_t>& block_classes){
-    vector<int32_t> ret;
-    for(auto i = block_classes.begin(); i != block_classes.end(); ++i){
-      if(memory.find(*i) == memory.end()){
-        memory[*i] = rand()%2 ? 1 : -1;
-      }
-      ret.push_back(memory[*i] * (*i));
-    }
-    return ret;
 }
 
 //TODO: Change this more programatically

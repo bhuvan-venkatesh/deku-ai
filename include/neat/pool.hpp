@@ -27,6 +27,10 @@ public:
 
 	bool save(ofstream& ofs) const;
 	bool load(ifstream& ifs);
+
+	void set_top();
+	void next_genome();
+	bool fitness_measured() const;
 private:
 	vector<Species> species;
 	int32_t generation;

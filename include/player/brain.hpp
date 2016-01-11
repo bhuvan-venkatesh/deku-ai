@@ -6,22 +6,22 @@
 #include "pool.hpp"
 #include "snes_controller.hpp"
 #include "image_classifier.hpp"
-
+#define timeout_constant 20;
 using std::unordered_map;
 
 struct Brain{
 public:
 	Brain();
+	void initialize_run();
 	void play();
-	vector<int32_t> demonize_blocks(const vector<int32_t>& block_classes);
 	void send_signals(const vector<bool>& buttons);
 private:
 	Pool pool;
 	Eye eye;
 	Snes_Controller controller;
 	Image_Classifier classifier;
-	time_t previous;
-	unordered_map<uint32_t,int32_t> memory;
+	int rightmost;
+	int timeout;
 };
 
 
