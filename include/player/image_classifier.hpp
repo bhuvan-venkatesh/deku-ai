@@ -31,14 +31,11 @@ public:
   Mat get_homogeny(const vector< DMatch >& matches, const vector<KeyPoint>& keypoints_scene,
               const vector<KeyPoint>& keypoints_object);
 
-  float rightmost;
-
+  int32_t prev_x;
+  int32_t prev_y;
 private:
   int32_t blocks; //Has to be a square number
   int32_t side;
-
-  int32_t prev_x;
-  int32_t prev_y;
 
   vector<Point2f> prev;
   vector<Mat> templates;

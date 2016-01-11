@@ -18,11 +18,11 @@ Snes_Controller::Snes_Controller(){
   bindings["Y"] = "S";
   bindings["R"] = "Q";
   bindings["L"] = "W";
-  bindings["UP"] = "Up";
-  bindings["DOWN"] = "Down";
-  bindings["LEFT"] = "Left";
-  bindings["RIGHT"] = "Right";
-  bindings["START"] = "Return";
+  bindings["UP"] = "I";
+  bindings["DOWN"] = "K";
+  bindings["LEFT"] = "J";
+  bindings["RIGHT"] = "L";
+  bindings["START"] = "O";
   bindings["SELECT"] = "P";
   bindings["LOAD"] = "F";
   /*

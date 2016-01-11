@@ -7,7 +7,6 @@
 #include "snes_controller.hpp"
 #include "image_classifier.hpp"
 #define timeout_constant 20;
-using std::unordered_map;
 
 struct Brain{
 public:

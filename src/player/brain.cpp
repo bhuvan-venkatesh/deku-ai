@@ -23,14 +23,38 @@ void Brain::initialize_run(){
 //This is the heart of the program!
 void Brain::play(){
   //TODO change to a lower priority thread
-  /*
-    ofstream stream("NEAT.dat");
-    pool.save(stream);*/
   cv::Mat pic = eye.analyze_screen();
   vector<int32_t> block = classifier.block_classify(pic);
-  rightmost = classifier.rightmost;
+  if(classifier.prev_x > rightmost){
+    rightmost = classifier.prev_x;
+    timeout = timeout_constant;
+  }
+  timeout--;
+  int timeout_bonus = pool.current_frame/4;
+  if(timeout + timeoutBonus <= 0){
+    int fitness = rightmost - pool.currentFrame / 2;
+    if(rightmost > 600){
+      fitness += 1000;
+    }
+    if(fitness == 0){
+      fitness = -1;
+    }
+    pool.top_genome().fitness = fitness;
+    if(fitness > pool.max_fitness){
+      pool.max_fitness = fitness;
+      ofstream stream("NEAT.dat");
+      pool.save(stream);
+    }
+    pool.current_species = 0;
+    pool.current_genome = 0;
+    while(pool.fitness_measured()){
+      pool.next_genome();
+    }
+    initialize_run();
+  }
   vector<bool> should_press = pool.evaluate(block);
   send_signals(should_press);
+
 }
 
 //TODO: Change this more programatically
