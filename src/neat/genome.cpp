@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstdlib>     /* srand, rand */
 #include <ctime>
+#include <stdexcept>
 
 Genome::Genome(int32_t inputs_, int32_t outputs_):
 	 fitness(0),
@@ -12,8 +13,15 @@ Genome::Genome(int32_t inputs_, int32_t outputs_):
 	 global_rank(0),
 	 inputs(inputs_),
 	 outputs(outputs_){
-		 //generate_network();
-	 	//BI
+		//generate_network();
+		if(inputs_ < 1 || outputs_ < 1){
+			throw std::invalid_argument( "received negative value" );
+		}
+		link_mutate_func = [this](){link_mutate(false);};
+		link_mutate_func_bias = [this](){link_mutate(true);};
+		node_mutate_func = [this](){node_mutate();};
+		enable_mutate_func = [this](){toggle_enable(true);};
+		disable_mutate_func = [this](){toggle_enable(false);};
 }
 
 Genome Genome::basic_genome(int32_t inputs, int32_t outputs){
@@ -40,19 +48,10 @@ void Genome::mutate(){
 	if(rand_double() < mutation_chance_rates.connection)
 		point_mutate();
 
-	auto link_mutate_func = [this](){link_mutate(false);};
 	call_mutation_with_chance(mutation_chance_rates.link, link_mutate_func);
-
-	auto link_mutate_func_bias = [this](){link_mutate(true);};
 	call_mutation_with_chance(mutation_chance_rates.bias, link_mutate_func_bias);
-
-	auto node_mutate_func = [this](){node_mutate();};
 	call_mutation_with_chance(mutation_chance_rates.node, node_mutate_func);
-
-	auto enable_mutate_func = [this](){toggle_enable(true);};
 	call_mutation_with_chance(mutation_chance_rates.enable, enable_mutate_func);
-
-	auto disable_mutate_func = [this](){toggle_enable(false);};
 	call_mutation_with_chance(mutation_chance_rates.disable, disable_mutate_func);
 
 }
@@ -150,7 +149,7 @@ void Genome::link_mutate(const bool& force_bias){
 	if(constains_link(link)){
 		return;
 	}
-	link.innovation = Pool::innovate(); //TODO: Fix this line with program logic
+	link.innovation = Pool::innovate();
 	link.weight = (rand_double()*4-2);
 
 	genes.push_back(link);
@@ -160,7 +159,7 @@ void Genome::node_mutate(){
 	if(genes.size() == 0)
 		return;
 	max_neuron++;
-	Gene gene = genes[rand()%genes.size()];
+	Gene& gene = genes[rand()%genes.size()];
 	if(!gene.enabled)
 		return;
 	gene.enabled = false;

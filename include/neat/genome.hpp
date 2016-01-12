@@ -122,4 +122,10 @@ private:
 
 	template<typename T>
 	void mutate_rate(T& rate);
+
+	std::function<void ()> link_mutate_func;
+	std::function<void ()> link_mutate_func_bias;
+	std::function<void ()> disable_mutate_func;
+	std::function<void ()> enable_mutate_func;
+	std::function<void ()> node_mutate_func;
 };

@@ -23,7 +23,6 @@
 
 # Other patterns
 *.lua
-*main*
 *test
 tests/bin/*
 tests/objs/*
