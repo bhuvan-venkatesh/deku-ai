@@ -14,6 +14,7 @@ struct Neuron: public Serial{
 	double weight;
 
 	double sigmoid(const double& x) const;
+	void clear();
 
 	bool save(ofstream& ofs) const;
 	bool load(ifstream& ifs);

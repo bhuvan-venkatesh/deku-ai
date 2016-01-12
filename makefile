@@ -15,6 +15,7 @@ BIN_DIR = bin
 CPP = $(wildcard $(SOURCE_DIR)/**/*.cpp) $(wildcard $(SOURCE_DIR)/*.cpp)
 OBJS = $(addprefix $(OBJS_DIR)/,$(patsubst %.cpp,%.o,$(notdir $(CPP))))
 TEST_OBJS = $(addprefix $(TEST_OBJS_DIR)/,gene_test.o)
+ASAN_OBJS = $(addsuffix -asan,$(OBJS))
 
 # HPP recursive directories
 
@@ -24,6 +25,7 @@ H_INCLUDES = $(addprefix -I,$(sort $(HPP)) $(INCLUDE_DIR))
 # Main hardcoded paths
 
 EXE_PATH = $(BIN_DIR)/$(EXE)
+ASAN_PATH = $(BIN_DIR)/$(EXE)-asan
 
 # Test hardcoded paths
 
@@ -34,7 +36,7 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 $(H_INCLUDES) -O2 -Weverything -pedantic -Wno-c++98-compat -fcolor-diagnostics
+CXXFLAGS = -std=c++11 $(H_INCLUDES) -O0 -g -pedantic -Wno-c++98-compat -fcolor-diagnostics
 LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Weverything -pedantic -Wl,--start-group -lcairo \
 -lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
 -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo -lopencv_calib3d\
@@ -44,14 +46,19 @@ LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Weverything -pedantic -Wl,--start
 
 all: $(EXE_PATH)
 
-# Fake targets for convenience
+# Fake targets for conveniencerun-asan
 
-.PHONY: all check clean run
+.PHONY: all check clean run run-asan
 
 # Small program -- All modules are linked
 
 $(EXE_PATH): $(OBJS)
 	$(LD) $^ $(LDFLAGS) -o $@
+
+$(ASAN_PATH): $(ASAN_OBJS)
+	$(LD) $^ $(LDFLAGS) -fsanitize=address -o $@
+
+
 
 # Function to find the matching path of the cpp file from .o file
 
@@ -65,13 +72,17 @@ endef
 $(OBJS) : % : $$(call get_cpp,$$(subst .o,,$$(notdir %))) | $(OBJS_DIR)
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
+.SECONDEXPANSION:
+$(ASAN_OBJS) : % : $$(call get_cpp,$$(subst .o-asan,,$$(notdir %))) | $(OBJS_DIR)
+	$(CXX) $(CXXFLAGS) -fsanitize=address -fno-omit-frame-pointer -c $< -o $@
+
 
 # Test patterns
 
 $(TEST_OBJS_DIR)/%.o: $(TEST_DIR)/%.cpp | $(TEST_DIR)
 	$(CXX) $(CXXFLAGS) -c $^ -o $@
 
-$(TEST_BIN_DIR)/%: $(OBJS) $(TEST_OBJS_DIR)/%.o | $(TEST_BIN_DIR)
+$(TEST_BIN_DIR)/%: $(subst $(OBJS_DIR)/$(EXE).o,,$(OBJS)) $(TEST_OBJS_DIR)/%.o | $(TEST_BIN_DIR)
 	$(LD) $^ $(LDFLAGS) -o $@
 
 # Precautionary directory makedirs in event directory does not exist
@@ -90,7 +101,7 @@ $(TEST_BIN_DIR):
 # Check runs all of the boost tests
 
 check: $(TEST_EXE)
-	(cd $(TEST_BIN_DIR) ; for f in * ; do ./$$f ; done)
+	(cd $(TEST_BIN_DIR) ; rm *txt ; for f in * ; do ./$$f ; done)
 
 # Removes Object Files
 
@@ -101,6 +112,10 @@ clean:
 
 run:
 	./$(EXE_PATH)
+
+run-asan:
+	ASAN_SYMBOLIZER_PATH=$$(which llvm-symbolizer-3.4) ./$(ASAN_PATH)
+
 
 # Special print command to print the value of the variable
 # Useful for makefile debugging, uncomment and set phony as needed

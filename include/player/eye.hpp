@@ -21,6 +21,7 @@ public:
 	Eye();
 	cv::Mat analyze_screen();
 	bool draw_keypoints;
+	char slop[7];
 
 private:
 	Emulator_Window* window;

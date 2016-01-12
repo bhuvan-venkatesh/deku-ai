@@ -5,6 +5,7 @@
 *.dll
 *.exe
 *.o
+*.o-asan
 *.so
 
 # Packages #
@@ -20,5 +21,9 @@
 *.tar
 *.zip
 
+# Other patterns
 *.lua
-
+*main*
+*test
+tests/bin/*
+tests/objs/*

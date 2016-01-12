@@ -31,16 +31,29 @@ public:
 	void set_top();
 	void next_genome();
 	bool fitness_measured() const;
+
 	inline Genome& top_genome() {
 		return species[current_species].genomes[current_genome];
 	}
 
 	inline const Genome& top_genome() const {
+		std::cout<<current_species<<std::endl;
+		std::cout<<current_genome<<std::endl;
 		return species[current_species].genomes[current_genome];
 	}
 	inline void reset_frame() {
 		current_frame = 0;
 	}
+
+	void advance_frame(){
+		++current_frame;
+	}
+
+	int32_t get_frame(){
+		return current_frame;
+	}
+
+	void update_fitness(int32_t new_fitness);
 private:
 	vector<Species> species;
 	int32_t generation;

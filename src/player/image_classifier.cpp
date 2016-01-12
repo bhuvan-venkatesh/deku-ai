@@ -7,11 +7,11 @@
 #define tolerance_factor 3
 #define mario_tolerance 10
 
-Image_Classifier::Image_Classifier(int blocks_):
-  blocks(blocks_),
+Image_Classifier::Image_Classifier(int side_):
+  blocks(side_*side_),
   detector(FeatureDetector::create("SIFT")),
   harris(FeatureDetector::create("HARRIS")),
-  side((int)sqrt(blocks_)),
+  side(side_),
   prev_x(-1),
   prev_y(-1){
   load_templates();
@@ -87,7 +87,7 @@ vector< DMatch > Image_Classifier::matches_within_tolerance(const vector< DMatch
 }
 
 Mat Image_Classifier::get_homogeny(const vector< DMatch >& matches, const vector<KeyPoint>& keypoints_scene,
-            const vector<KeyPoint>& keypoints_object){
+            const vector<KeyPoint>& keypoints_object) {
   //-- Localize the object
   vector<Point2f> obj;
   vector<Point2f> scene;
@@ -113,7 +113,7 @@ vector<int32_t> Image_Classifier::block_classify(const Mat& image){
 
   for(auto i = keypoints.begin(); i != keypoints.end(); ++i){
     cv::Point2f color = i->pt;
-    ret[(int)(color.x/width*side+color.y/height)] += 1;
+    ret[(int)(color.x/width*side+color.y/height) % blocks] += 1;
   }
 
   for(size_t i = 0; i < ret.size(); ++i){
@@ -144,7 +144,12 @@ void Image_Classifier::detect_mario(const Mat& img_scene, vector<int32_t>& ret,
     vector< DMatch > good_matches = matches_within_tolerance(matches,
                                       tolerance_factor*min_dist);
 
-    Mat H = get_homogeny(good_matches, keypoints_scene, keypoints_object);
+    Mat H;
+    try{
+      H = get_homogeny(good_matches, keypoints_scene, keypoints_object);
+    }catch(...){
+      continue;
+    }
 
     //-- Get the corners from the image_1 ( the object to be "detected" )
     std::vector<Point2f> obj_corners(4);
@@ -158,7 +163,6 @@ void Image_Classifier::detect_mario(const Mat& img_scene, vector<int32_t>& ret,
     const auto width = abs(scene_corners[0].x - scene_corners[1].x);
     auto height = abs(scene_corners[0].y - scene_corners[3].y);
     Point2f mario = scene_corners[0] + Point2f( cols, 0);
-    rightmost = scene_corners[1].x;
 
     //TODO: Check if it is within reason, if it is then colors those blocks good
     if(abs(prev_y-mario.y) < mario_tolerance && abs(prev_x-mario.x) < mario_tolerance ||
@@ -175,6 +179,7 @@ void Image_Classifier::detect_mario(const Mat& img_scene, vector<int32_t>& ret,
       }
       break;
     }
+    descriptors_scene.release();
+    H.release();
   }
-
 }

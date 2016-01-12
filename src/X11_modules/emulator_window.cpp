@@ -30,11 +30,8 @@ void Emulator_Window::get_window(const char* name){
 
     Window *ret;
     unsigned int len;
-    std::cout<<1;
     xdo_search_windows(xdo, &search, &ret, &len );
-    std::cout<<2;
     if(len != 1){
-      std::cout<<len<<"\n";
         std::cerr<<"More than one match, be more specific"<<std::endl;
         throw;
     }

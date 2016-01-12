@@ -146,6 +146,20 @@ vector<bool> Pool::evaluate(const vector<int32_t>& inputs){
 	return current_gen.evaluate(inputs);
 }
 
+void Pool::update_fitness(int32_t new_fitness){
+	top_genome().fitness = new_fitness;
+	if(new_fitness > max_fitness){
+		max_fitness = new_fitness;
+		ofstream stream("NEAT.dat");
+		save(stream);
+	}
+	current_species = 0;
+	current_genome = 0;
+	while(fitness_measured()){
+		next_genome();
+	}
+}
+
 
 bool Pool::save(ofstream& ofs) const{
 	ofs << innovation << "\n"
@@ -163,6 +177,7 @@ bool Pool::save(ofstream& ofs) const{
 	return true;
 
 }
+
 bool Pool::load(ifstream& ifs){
 	ifs >> innovation
 		>> generation
@@ -214,5 +229,10 @@ void Pool::next_genome(){
 	}
 }
 bool Pool::fitness_measured() const{
+	if(current_species >= species.size())
+		return false;
+	else if (current_genome >= species[current_species].genomes.size()) {
+		return false;
+	}
 	return species[current_species].genomes[current_genome].fitness != 0;
 }

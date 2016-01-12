@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <functional>
+#include <memory>
 
 #include "neuron.hpp"
 #include "serial.hpp"
@@ -14,14 +15,15 @@
 #define delta_threshold 1.0
 #define stale_species 15
 
-
-
-typedef std::map<std::int32_t,Neuron> NetworkMap;
-//In case there is a need to change later
+using std::unique_ptr;
 using std::vector;
 using std::int32_t;
 using std::map;
 using std::string;
+
+typedef map<int32_t,Neuron> NetworkMap;
+//In case there is a need to change later
+
 
 namespace action_chances{
 		const static float

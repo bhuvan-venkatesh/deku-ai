@@ -17,7 +17,7 @@ bool Gene::save(ofstream& ofs) const {
 
 		ofs << into 				<< "\n";
 		ofs << out					<< "\n";
-		ofs << weight	<< "\n";
+		ofs << weight				<< "\n";
 		ofs << innovation		<< "\n";
 		ofs << enabled			<< "\n";
 		return true;

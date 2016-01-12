@@ -5,6 +5,11 @@ double Neuron::sigmoid(const double& x) const {
 	return 2/(1+exp(-4.9*x))-1;
 }
 
+void Neuron::clear(){
+	weight = 0;
+	incoming.clear();
+}
+
 bool Neuron::save(ofstream& ofs) const{
 	ofs << weight << "\n";
 	ofs << incoming.size() << "\n";

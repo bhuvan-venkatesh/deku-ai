@@ -66,7 +66,6 @@ void Genome::call_mutation_with_chance(float p, std::function<void ()> func){
 
 void Genome::generate_network(){
 	reset_network_neurons();
-	std::sort(genes.begin(), genes.end());
 	connect_neurons();
 }
 
@@ -319,12 +318,13 @@ bool Genome::load(ifstream& ifs){
 ****************************************************/
 
 void Genome::reset_network_neurons(){
-	network.clear();
 	for(int32_t i = 0; i < inputs; ++i){
-		network[i] = Neuron();
+		std::cout<<i<<std::endl;
+		network[i].clear();
 	}
 	for(int32_t i = 0; i < outputs; ++i){
-		network[max_nodes+i] = Neuron();
+		std::cout<<i+max_nodes<<std::endl;
+		network[i+max_nodes].clear();
 	}
 }
 
@@ -341,7 +341,7 @@ void Genome::connect_neurons(){
 
 void Genome::initialize_network_neuron(int32_t number){
 	if(network.find(number) == network.end()){
-		network[number] = Neuron();
+		network[number].clear();
 	}
 }
 
@@ -363,8 +363,9 @@ void Genome::evaluate_network(){
 
 	for(auto& pair : network){
 		Neuron& current = pair.second;
+		auto& vec_ptr = current.incoming;
 		double sum = 0;
-		for(auto incoming_gene = current.incoming.begin(); incoming_gene != current.incoming.end();
+		for(auto incoming_gene = vec_ptr.begin(); incoming_gene != vec_ptr.end();
 			++incoming_gene){
 				Gene& ref = genes[(*incoming_gene)];
 			sum += ref.weight * network[ref.into].weight;

@@ -1,10 +1,11 @@
 #include "brain.hpp"
 #define inputs 256
+#define side 16
 #define outputs 8
 
 Brain::Brain():
   pool(Pool(inputs, outputs)),
-  classifier(Image_Classifier(inputs))
+  classifier(Image_Classifier(side))
 {
 }
 
@@ -25,33 +26,26 @@ void Brain::play(){
   //TODO change to a lower priority thread
   cv::Mat pic = eye.analyze_screen();
   vector<int32_t> block = classifier.block_classify(pic);
+  pic.release();
+
   if(classifier.prev_x > rightmost){
     rightmost = classifier.prev_x;
     timeout = timeout_constant;
   }
   timeout--;
-  int timeout_bonus = pool.current_frame/4;
-  if(timeout + timeoutBonus <= 0){
-    int fitness = rightmost - pool.currentFrame / 2;
+  int timeout_bonus = pool.get_frame()/4;
+  if(timeout + timeout_bonus <= 0){
+    int32_t fitness = rightmost - pool.get_frame() / 2;
     if(rightmost > 600){
       fitness += 1000;
     }
     if(fitness == 0){
       fitness = -1;
     }
-    pool.top_genome().fitness = fitness;
-    if(fitness > pool.max_fitness){
-      pool.max_fitness = fitness;
-      ofstream stream("NEAT.dat");
-      pool.save(stream);
-    }
-    pool.current_species = 0;
-    pool.current_genome = 0;
-    while(pool.fitness_measured()){
-      pool.next_genome();
-    }
+    pool.update_fitness(fitness);
     initialize_run();
   }
+  pool.advance_frame();
   vector<bool> should_press = pool.evaluate(block);
   send_signals(should_press);
 
