@@ -81,7 +81,7 @@ public:
   void toggle_enable(const bool &enabled);
   double disjoint(const Genome &other) const;
   double weights(const Genome &other) const;
-  void call_mutation_with_chance(float p, std::function<void()> func);
+  int call_times(float p);
 
   bool same_species(const Genome &other) const;
 
@@ -105,10 +105,4 @@ private:
   bool is_input_neuron(int32_t neuron_number) const;
 
   template <typename T> void mutate_rate(T &rate);
-
-  std::function<void()> link_mutate_func;
-  std::function<void()> link_mutate_func_bias;
-  std::function<void()> disable_mutate_func;
-  std::function<void()> enable_mutate_func;
-  std::function<void()> node_mutate_func;
 };

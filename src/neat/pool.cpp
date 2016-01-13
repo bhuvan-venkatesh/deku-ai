@@ -1,5 +1,8 @@
 #include "pool.hpp"
 #include <algorithm>
+#include <tuple>
+using std::tuple;
+using std::get;
 
 int32_t Pool::innovation = 0;
 
@@ -18,17 +21,20 @@ void Pool::rank_globally() {
   /*You have to use pointers or else the original argument
           Will not be changed and you cannot use references in templates*/
 
-  vector<Genome *> global;
-  for (auto s = species.begin(); s != species.end(); ++s) {
-    for (auto genome = s->genomes.begin(); genome != s->genomes.end();
-         ++genome) {
-      global.push_back(&(*genome));
+  vector<tuple<int, int, int>> global;
+  for (size_t i = 0; i != species.size(); ++i) {
+    Species &s = species[i];
+    for (size_t j = 0; j != s.genomes.size(); ++j) {
+      global.push_back(tuple<int, int, int>(i, j, s.genomes[j].fitness));
     }
   }
   std::sort(global.begin(), global.end(),
-            [](Genome *a, Genome *b) { return *a < *b; });
+            [](tuple<int, int, int> a, tuple<int, int, int> b) {
+              return get<2>(a) < get<2>(b);
+            });
   for (int32_t i = 0; i < global.size(); ++i) {
-    global[i]->global_rank = i + 1;
+    auto tuple = global[i];
+    species[get<0>(tuple)].genomes[get<1>(tuple)].global_rank = i + 1;
   }
 }
 
@@ -54,14 +60,15 @@ void Pool::cull_species(bool cut_to_one) {
 
 void Pool::remove_stale_species() {
   rank_globally();
+
   for (int32_t i = 0; i < species.size(); ++i) {
     Species &s = species[i];
     std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
+    s.staleness++;
     if (s.genomes[0].fitness > s.top_fitness) {
       s.top_fitness = s.genomes[0].fitness;
       s.staleness = 0;
-    } else
-      s.staleness++;
+    }
     if (s.staleness > stale_species && s.top_fitness <= max_fitness) {
       species.erase(std::find(species.begin(), species.end(), s));
       --i;
@@ -102,36 +109,38 @@ void Pool::new_generation() {
   cull_species(false);
   remove_stale_species();
   rank_globally();
+
   for (auto s = species.begin(); s != species.end(); ++s) {
     s->calculate_average_fitness();
   }
+
   remove_weak_species();
   int32_t sum = calculate_average_fitness();
-  vector<Genome> children;
+  size_t added_species = 0;
 
   for (auto s = species.begin(); s != species.end(); ++s) {
     s->calculate_average_fitness();
     int32_t breed = int(s->average_fitness / sum * population);
     for (int32_t i = 0; i < breed; ++i) {
-      children.push_back(s->breed_child());
+      add_to_species(s->breed_child());
+      added_species++;
     }
   }
+
   cull_species(true);
-  while (children.size() + species.size() < population) {
-    children.push_back(species[rand() % species.size()].breed_child());
+  int temp = population - species.size();
+  while (added_species++ < temp) {
+    add_to_species(species[rand() % (species.size() - 1)].breed_child());
   }
 
-  for (auto c = children.begin(); c != children.end(); ++c) {
-    add_to_species(*c);
-  }
   generation++;
 }
 
 vector<bool> Pool::evaluate(const vector<int32_t> &inputs) {
-
   Species &current_spec = species[current_species];
   Genome &current_gen = current_spec.genomes[current_genome];
   current_gen.generate_network();
+
   return current_gen.evaluate(inputs);
 }
 

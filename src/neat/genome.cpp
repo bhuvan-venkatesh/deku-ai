@@ -13,11 +13,6 @@ Genome::Genome(int32_t inputs_, int32_t outputs_)
   if (inputs_ < 1 || outputs_ < 1) {
     throw std::invalid_argument("received negative value");
   }
-  link_mutate_func = [this]() { link_mutate(false); };
-  link_mutate_func_bias = [this]() { link_mutate(true); };
-  node_mutate_func = [this]() { node_mutate(); };
-  enable_mutate_func = [this]() { toggle_enable(true); };
-  disable_mutate_func = [this]() { toggle_enable(false); };
 }
 
 void Genome::copy(const Genome &other) {
@@ -27,6 +22,7 @@ void Genome::copy(const Genome &other) {
   global_rank = other.global_rank;
   inputs = other.inputs;
   outputs = other.outputs;
+
   mutation_chance_rates.connection = other.mutation_chance_rates.connection;
   mutation_chance_rates.disturb = other.mutation_chance_rates.disturb;
   mutation_chance_rates.link = other.mutation_chance_rates.link;
@@ -93,18 +89,25 @@ void Genome::mutate() {
   if (rand_double() < mutation_chance_rates.connection)
     point_mutate();
 
-  call_mutation_with_chance(mutation_chance_rates.link, link_mutate_func);
-  call_mutation_with_chance(mutation_chance_rates.bias, link_mutate_func_bias);
-  call_mutation_with_chance(mutation_chance_rates.node, node_mutate_func);
-  call_mutation_with_chance(mutation_chance_rates.enable, enable_mutate_func);
-  call_mutation_with_chance(mutation_chance_rates.disable, disable_mutate_func);
+  for (int i = call_times(mutation_chance_rates.link); i > 0; --i)
+    link_mutate(false);
+  for (int i = call_times(mutation_chance_rates.bias); i > 0; --i)
+    link_mutate(true);
+  for (int i = call_times(mutation_chance_rates.node); i > 0; --i)
+    node_mutate();
+  for (int i = call_times(mutation_chance_rates.enable); i > 0; --i)
+    toggle_enable(true);
+  for (int i = call_times(mutation_chance_rates.disable); i > 0; --i)
+    toggle_enable(false);
 }
 
-void Genome::call_mutation_with_chance(float p, std::function<void()> func) {
+int Genome::call_times(float p) {
+  int times = 0;
   for (; p > 0; --p) {
     if (rand_double() < p)
-      func();
+      times++;
   }
+  return times;
 }
 
 void Genome::generate_network() {
@@ -449,24 +452,24 @@ template <typename T> void Genome::mutate_rate(T &rate) {
 
 void Genome::check_rep() const {
   cout << "fitness:\t\t" << fitness << "\n"
-       << "fitness adjusted:\t\t" << fitness_adjusted << "\n"
+       << "fitness adjusted:\t" << fitness_adjusted << "\n"
        << "max neuron:\t\t" << max_neuron << "\n"
        << "global rank:\t\t" << global_rank << "\n"
-       << "inputs:\t\t" << inputs << "\n"
+       << "inputs:\t\t\t" << inputs << "\n"
        << "outputs:\t\t" << outputs << "\n";
 
   cout << "connection:\t\t" << mutation_chance_rates.connection << "\n"
        << "disturb:\t\t" << mutation_chance_rates.disturb << "\n"
-       << "link:\t\t" << mutation_chance_rates.link << "\n"
-       << "bias:\t\t" << mutation_chance_rates.bias << "\n"
-       << "node:\t\t" << mutation_chance_rates.node << "\n"
-       << "enable:\t\t" << mutation_chance_rates.enable << "\n"
+       << "link:\t\t\t" << mutation_chance_rates.link << "\n"
+       << "bias:\t\t\t" << mutation_chance_rates.bias << "\n"
+       << "node:\t\t\t" << mutation_chance_rates.node << "\n"
+       << "enable:\t\t\t" << mutation_chance_rates.enable << "\n"
        << "disable:\t\t" << mutation_chance_rates.disable << "\n"
-       << "step:\t\t" << mutation_chance_rates.step << "\n";
+       << "step:\t\t\t" << mutation_chance_rates.step << "\n";
 
   cout << "network size:\t\t" << network.size() << "\n";
 
-  cout << "gene size:" << genes.size() << "\n";
+  cout << "gene size:\t\t" << genes.size() << "\n";
   /*
   for (auto i = genes.begin(); i != genes.end(); ++i) {
     i->save(ofs);
