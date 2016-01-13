@@ -14,8 +14,8 @@ Genome::Genome(int32_t inputs_, int32_t outputs_)
     throw std::invalid_argument("received negative value");
   }
 }
-
-void Genome::copy(const Genome &other) {
+/*
+void Genome::copy(Genome other) {
   fitness = other.fitness;
   fitness_adjusted = other.fitness_adjusted;
   max_neuron = other.max_neuron;
@@ -32,8 +32,8 @@ void Genome::copy(const Genome &other) {
   mutation_chance_rates.disable = other.mutation_chance_rates.disable;
   mutation_chance_rates.step = other.mutation_chance_rates.step;
 
-  genes = other.genes;
-  network = other.network;
+  genes = vector<Gene>(other);
+  network.insert(other.network.begin(), other.network.end());
 }
 
 Genome::Genome(const Genome &other) { copy(other); }
@@ -49,7 +49,7 @@ Genome &Genome::operator=(Genome &&other) {
   copy(other);
   return *this;
 }
-
+*/
 bool Genome::operator==(const Genome &other) const {
   return fitness == other.fitness &&
          fitness_adjusted == other.fitness_adjusted &&
@@ -155,7 +155,7 @@ int32_t Genome::random_neuron(const bool &non_input) const {
     }
   }
   srand((unsigned int)time(NULL));
-  return neurons[static_cast<int>(rand() % (neurons.size()))];
+  return neurons[static_cast<size_t>(rand() % ((int)neurons.size()))];
 }
 
 bool Genome::constains_link(const Gene &link) const {
@@ -170,13 +170,13 @@ bool Genome::constains_link(const Gene &link) const {
 double Genome::rand_double() { return double(rand()) / RAND_MAX; }
 
 void Genome::point_mutate() {
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
   const float &step = mutation_chance_rates.step;
   for (auto i = genes.begin(); i != genes.end(); ++i) {
     if (rand_double() < mutation_chance_rates.disturb)
-      i->weight = i->weight + rand_double() * step * 2 - step;
+      i->weight = i->weight + rand_double() * step * 2 - (double)step;
     else
-      i->weight = (rand_double() * 4 - 2);
+      i->weight = (rand_double() * 4.0 - 2.0);
   }
 }
 
@@ -255,9 +255,9 @@ double Genome::disjoint(const Genome &other) const {
 double Genome::weights(const Genome &other) const {
   double sum = 0;
   int32_t incident = 0;
-  for (auto i = genes.begin(); i != genes.end(); ++i) {
-    auto gene2 = std::find(other.genes.begin(), other.genes.end(), *i);
-    if (gene2 != other.genes.end()) {
+  for (auto i = other.genes.begin(); i != other.genes.end(); ++i) {
+    auto gene2 = std::find(genes.begin(), genes.end(), *i);
+    if (gene2 != genes.end()) {
       sum += std::abs(i->weight - gene2->weight);
       incident++;
     }
@@ -429,9 +429,9 @@ Genome Genome::random_gene_swap(const Genome &higher_fitness,
   srand(time(NULL));
   for (auto i = higher_fitness.genes.begin(); i != higher_fitness.genes.end();
        ++i) {
-    Gene gene1 = *i;
+    Gene gene1 = Gene(*i);
     if (innov2.find(gene1.innovation) != innov2.end()) {
-      Gene gene2 = innov2[gene1.innovation];
+      Gene gene2 = Gene(innov2[gene1.innovation]);
       if (rand() % 2 && gene2.enabled) {
         child.genes.push_back(gene2);
         continue;
@@ -439,6 +439,7 @@ Genome Genome::random_gene_swap(const Genome &higher_fitness,
     }
     child.genes.push_back(gene1);
   }
+
   return child;
 }
 

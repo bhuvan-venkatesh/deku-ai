@@ -25,7 +25,8 @@ Genome Species::breed_child() {
   if (rand() / (double)RAND_MAX < crossover_chance) {
     auto &g1 = genomes[static_cast<size_t>(rand() % genomes.size())];
     auto &g2 = genomes[static_cast<size_t>(rand() % genomes.size())];
-    child = g1.crossover(g2);
+    auto scoped = g1.crossover(g2);
+    child = scoped;
   }
 
   child.mutate();

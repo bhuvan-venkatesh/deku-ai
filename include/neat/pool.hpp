@@ -33,15 +33,15 @@ public:
   bool fitness_measured() const;
 
   inline Genome &top_genome() {
-    return species[current_species].genomes[current_genome];
+    return species[static_cast<size_t>(current_species)]
+        .genomes[static_cast<size_t>(current_genome)];
   }
 
-  void generate_top_network() {
-    species[current_species].genomes[current_genome].generate_network();
-  }
+  void generate_top_network() { top_genome().generate_network(); }
 
   inline const Genome &top_genome() const {
-    return species[current_species].genomes[current_genome];
+    return species[static_cast<size_t>(current_species)]
+        .genomes[static_cast<size_t>(current_genome)];
   }
   inline void reset_frame() { current_frame = 0; }
 

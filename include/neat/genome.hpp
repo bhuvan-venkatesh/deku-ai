@@ -55,14 +55,16 @@ public:
   vector<Gene> genes;
   NetworkMap network;
 
-  void copy(const Genome &other);
+  // void copy(Genome other);
 
   Genome(int32_t inputs_, int32_t outputs_);
-  Genome(const Genome &other);
-  Genome(Genome &&other);
-  Genome &operator=(const Genome &other);
-  Genome &operator=(Genome &&other);
-  virtual ~Genome(){};
+
+  Genome(const Genome &other) = default;
+  Genome(Genome &&other) = default;
+  Genome &operator=(const Genome &other) = default;
+  Genome &operator=(Genome &&other) = default;
+
+  virtual ~Genome() {}
 
   bool operator==(const Genome &other) const;
   bool operator<(const Genome &other) const;

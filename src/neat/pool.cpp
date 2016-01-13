@@ -62,7 +62,7 @@ void Pool::remove_stale_species() {
   rank_globally();
 
   for (int32_t i = 0; i < species.size(); ++i) {
-    Species &s = species[i];
+    Species s = species[i];
     std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
     s.staleness++;
     if (s.genomes[0].fitness > s.top_fitness) {
@@ -70,7 +70,9 @@ void Pool::remove_stale_species() {
       s.staleness = 0;
     }
     if (s.staleness > stale_species && s.top_fitness <= max_fitness) {
-      species.erase(std::find(species.begin(), species.end(), s));
+      species.erase(
+          std::remove(species.begin() + i, species.begin() + i + 1, s),
+          species.end());
       --i;
     }
   }
@@ -83,7 +85,8 @@ void Pool::remove_weak_species() {
     Species &s = species[i];
     int32_t breed = int(s.average_fitness / sum * population);
     if (breed < 1) {
-      species.erase(std::find(species.begin(), species.end(), s));
+      species.erase(std::remove(species.begin(), species.end(), s),
+                    species.end());
       --i;
     }
   }
@@ -110,25 +113,30 @@ void Pool::new_generation() {
   remove_stale_species();
   rank_globally();
 
-  for (auto s = species.begin(); s != species.end(); ++s) {
-    s->calculate_average_fitness();
+  for (size_t s = 0; s != species.size(); ++s) {
+    species[s].calculate_average_fitness();
   }
 
   remove_weak_species();
   int32_t sum = calculate_average_fitness();
-  size_t added_species = 0;
+  int added_species = 0;
 
-  for (auto s = species.begin(); s != species.end(); ++s) {
-    s->calculate_average_fitness();
-    int32_t breed = int(s->average_fitness / sum * population);
+  for (size_t j = 0; j != species.size(); ++j) {
+    Species &s = species[j];
+    s.calculate_average_fitness();
+    int32_t breed = int(s.average_fitness / sum * population);
     for (int32_t i = 0; i < breed; ++i) {
-      add_to_species(s->breed_child());
+      add_to_species(s.breed_child());
       added_species++;
     }
   }
 
   cull_species(true);
-  int temp = population - species.size();
+  int temp = population - static_cast<int>(species.size());
+  if (temp < 0) {
+    generation++;
+    return;
+  }
   while (added_species++ < temp) {
     add_to_species(species[rand() % (species.size() - 1)].breed_child());
   }
@@ -210,7 +218,6 @@ void Pool::next_genome() {
     current_species++;
     if (current_species >= species.size()) {
       current_species = 0;
-      std::cout << "HELALUJAH" << std::endl;
       new_generation();
     }
   }

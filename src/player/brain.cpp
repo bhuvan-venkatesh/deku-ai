@@ -20,6 +20,7 @@ void Brain::initialize_run() {
 // This is the heart of the program!
 void Brain::play() {
   // TODO change to a lower priority thread
+  std::cout << 1 << std::endl;
   cv::Mat pic = eye.analyze_screen();
   vector<int32_t> block = classifier.block_classify(pic);
   pic.release();

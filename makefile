@@ -37,13 +37,14 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 $(H_INCLUDES) -O0 -g -pedantic -Wno-c++98-compat -fcolor-diagnostics
+CXXFLAGS = -std=c++11 $(H_INCLUDES) -O0 -g -pedantic -Weverything -Wno-deprecated-declarations \
+-Wno-c++98-compat -fcolor-diagnostics -ftemplate-backtrace-limit=0
 LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Weverything -pedantic -Wl,--start-group -lcairo \
 -lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
 -lopencv_imgproc -lopencv_legacy -lopencv_ml -lopencv_nonfree -lxdo -lopencv_calib3d\
 -Wl,--end-group
 
-# All only makes the executable
+# All only makes the executableadd_to_
 
 all: $(EXE_PATH)
 
