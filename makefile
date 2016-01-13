@@ -21,6 +21,7 @@ ASAN_OBJS = $(addsuffix -asan,$(OBJS))
 
 HPP = $(dir $(wildcard $(INCLUDE_DIR)/*) $(wildcard $(INCLUDE_DIR)/**/*))
 H_INCLUDES = $(addprefix -I,$(sort $(HPP)) $(INCLUDE_DIR))
+H_FILES = $(wildcard $(INCLUDE_DIR)/**/*.hpp) $(wildcard $(INCLUDE_DIR)/*.cpp)
 
 # Main hardcoded paths
 
@@ -66,6 +67,10 @@ define get_cpp
     $(filter %$(1).cpp,$(CPP))
 endef
 
+define get_hpp
+    $(filter %$(1).hpp,$(H_FILES))
+endef
+
 # Needs a second hand expansion to correctly match pattern
 
 .SECONDEXPANSION:
@@ -102,6 +107,7 @@ $(TEST_BIN_DIR):
 
 check: $(TEST_EXE)
 	(cd $(TEST_BIN_DIR) ; rm *txt ; for f in * ; do ./$$f ; done)
+	echo Finished
 
 # Removes Object Files
 

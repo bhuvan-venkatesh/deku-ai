@@ -11,64 +11,60 @@
 using std::int32_t;
 using std::vector;
 
-struct Pool: public Serial{
+struct Pool : public Serial {
 public:
-	Pool(int32_t inputs_, int32_t outputs_);
-	static int32_t innovate();
+  Pool(int32_t inputs_, int32_t outputs_);
+  static int32_t innovate();
 
-	Pool(const Pool& other) = default;
-	Pool(Pool&& other) = default;
-	Pool& operator=(const Pool& other) = default;
-	Pool& operator=(Pool&& other) = default;
+  Pool(const Pool &other) = default;
+  Pool(Pool &&other) = default;
+  Pool &operator=(const Pool &other) = default;
+  Pool &operator=(Pool &&other) = default;
 
-	static int32_t innovation; //Serves as a counter
+  static int32_t innovation; // Serves as a counter
 
-	vector<bool> evaluate(const vector<int32_t>& inputs);
+  vector<bool> evaluate(const vector<int32_t> &inputs);
 
-	bool save(ofstream& ofs) const;
-	bool load(ifstream& ifs);
+  bool save(ofstream &ofs) const;
+  bool load(ifstream &ifs);
 
-	void set_top();
-	void next_genome();
-	bool fitness_measured() const;
+  void set_top();
+  void next_genome();
+  bool fitness_measured() const;
 
-	inline Genome& top_genome() {
-		return species[current_species].genomes[current_genome];
-	}
+  inline Genome &top_genome() {
+    return species[current_species].genomes[current_genome];
+  }
 
-	inline const Genome& top_genome() const {
-		std::cout<<current_species<<std::endl;
-		std::cout<<current_genome<<std::endl;
-		return species[current_species].genomes[current_genome];
-	}
-	inline void reset_frame() {
-		current_frame = 0;
-	}
+  void generate_top_network() {
+    species[current_species].genomes[current_genome].generate_network();
+  }
 
-	void advance_frame(){
-		++current_frame;
-	}
+  inline const Genome &top_genome() const {
+    return species[current_species].genomes[current_genome];
+  }
+  inline void reset_frame() { current_frame = 0; }
 
-	int32_t get_frame(){
-		return current_frame;
-	}
+  void advance_frame() { ++current_frame; }
 
-	void update_fitness(int32_t new_fitness);
+  int32_t get_frame() { return current_frame; }
+
+  void update_fitness(int32_t new_fitness);
+
 private:
-	vector<Species> species;
-	int32_t generation;
-	int32_t current_species;
-	int32_t current_genome;
-	int32_t current_frame;
-	int32_t max_fitness;
-	int32_t inputs, outputs;
+  vector<Species> species;
+  int32_t generation;
+  int32_t current_species;
+  int32_t current_genome;
+  int32_t current_frame;
+  int32_t max_fitness;
+  int32_t inputs, outputs;
 
-
-	void rank_globally();
-	int32_t calculate_average_fitness();
-	void cull_species(bool cut_to_one);
-	void remove_stale_species();
-	void remove_weak_species();
-	void add_to_species(const Genome& child);
-	void new_generation();
+  void rank_globally();
+  int32_t calculate_average_fitness();
+  void cull_species(bool cut_to_one);
+  void remove_stale_species();
+  void remove_weak_species();
+  void add_to_species(Genome child);
+  void new_generation();
 };

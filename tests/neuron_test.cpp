@@ -1,5 +1,5 @@
 #define BOOST_TEST_DYN_LINK
-#define BOOST_TEST_MODULE Gene
+#define BOOST_TEST_MODULE Neuron
 #include <boost/test/included/unit_test.hpp>
 #include "neuron.hpp"
 #include "serial.hpp"
