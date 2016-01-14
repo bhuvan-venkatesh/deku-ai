@@ -5,11 +5,12 @@
 #include <unordered_map>
 #include <functional>
 #include <memory>
+#include <stdexcept>
 
 #include "neuron.hpp"
 #include "serial.hpp"
 
-#define max_nodes 1000000
+#define max_nodes 10000
 #define delta_disjoint 2.0
 #define delta_weights 0.4
 #define delta_threshold 1.0
@@ -22,8 +23,20 @@ using std::unordered_map;
 using std::string;
 using std::cout;
 
+// This has the first input elements as the input neurons
+// The next elements as intermediate nodes
+// The final output elements as output nodes
 typedef unordered_map<int32_t, Neuron> NetworkMap;
 // In case there is a need to change later
+
+template <typename T> T &random_element(vector<T> elems) {
+  if (elems.size() == 0)
+    throw std::invalid_argument("No Elements");
+  else if (elems.size() == 1)
+    return elems[0];
+  int index = rand() % (elems.size() - 1);
+  return elems[index];
+}
 
 namespace action_chances {
 const static float mutation_connect = (float)0.25, disturb = (float)0.9,
@@ -59,10 +72,12 @@ public:
 
   Genome(int32_t inputs_, int32_t outputs_);
 
-  Genome(const Genome &other) = default;
-  Genome(Genome &&other) = default;
-  Genome &operator=(const Genome &other) = default;
-  Genome &operator=(Genome &&other) = default;
+  Genome(const Genome &other);
+  Genome(Genome &&other);
+  Genome &operator=(Genome other);
+
+  void copy(const Genome &other);
+  void swap(Genome &other);
 
   virtual ~Genome() {}
 

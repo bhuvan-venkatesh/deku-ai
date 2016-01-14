@@ -17,6 +17,38 @@ Pool::Pool(int32_t inputs_, int32_t outputs_)
 }
 int32_t Pool::innovate() { return ++Pool::innovation; }
 
+Pool::Pool(const Pool &other) { copy(other); }
+
+Pool::Pool(Pool &&other) { swap(other); }
+
+Pool &Pool::operator=(Pool other) {
+  swap(other);
+  return *this;
+}
+
+void Pool::copy(const Pool &other) {
+  species = other.species;
+  generation = other.generation;
+  current_species = other.current_species;
+  current_genome = other.current_genome;
+  current_frame = other.current_frame;
+  max_fitness = other.max_fitness;
+  inputs = other.inputs;
+  outputs = other.outputs;
+}
+void Pool::swap(Pool &other) {
+  using std::swap;
+
+  swap(species, other.species);
+  swap(generation, other.generation);
+  swap(current_species, other.current_species);
+  swap(current_genome, other.current_genome);
+  swap(current_frame, other.current_frame);
+  swap(max_fitness, other.max_fitness);
+  swap(inputs, other.inputs);
+  swap(outputs, other.outputs);
+}
+
 void Pool::rank_globally() {
   /*You have to use pointers or else the original argument
           Will not be changed and you cannot use references in templates*/

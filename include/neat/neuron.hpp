@@ -9,20 +9,22 @@
 using std::vector;
 using std::int32_t;
 
-struct Neuron: public Serial{
-	vector<int32_t> incoming;
-	double weight;
+struct Neuron : public Serial {
+  vector<int32_t> incoming;
+  double weight;
 
-	double sigmoid(const double& x) const;
-	void clear();
+  double sigmoid(const double &x) const;
+  void clear();
 
-	bool save(ofstream& ofs) const;
-	bool load(ifstream& ifs);
+  bool save(ofstream &ofs) const;
+  bool load(ifstream &ifs);
 
-	Neuron(): weight(0) {}
-	Neuron(const Neuron& other) = default;
-	Neuron(Neuron&& other) = default;
-	Neuron& operator= (const Neuron& other) = default;
-	Neuron& operator= (Neuron&& other) = default;
-	virtual ~Neuron() {}
+  Neuron() : weight(0) {}
+  Neuron(const Neuron &other);
+  Neuron(Neuron &&other);
+  Neuron &operator=(Neuron other);
+  virtual ~Neuron() {}
+
+  void copy(const Neuron &here);
+  void swap(Neuron &other);
 };

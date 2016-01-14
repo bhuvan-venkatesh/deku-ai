@@ -15,13 +15,14 @@ struct Pool : public Serial {
 public:
   Pool(int32_t inputs_, int32_t outputs_);
   static int32_t innovate();
-
-  Pool(const Pool &other) = default;
-  Pool(Pool &&other) = default;
-  Pool &operator=(const Pool &other) = default;
-  Pool &operator=(Pool &&other) = default;
-
   static int32_t innovation; // Serves as a counter
+
+  Pool(const Pool &other);
+  Pool(Pool &&other);
+  Pool &operator=(Pool other);
+
+  void copy(const Pool &other);
+  void swap(Pool &other);
 
   vector<bool> evaluate(const vector<int32_t> &inputs);
 

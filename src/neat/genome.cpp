@@ -6,6 +6,7 @@
 #include <ctime>
 #include <stdexcept>
 using std::cout;
+
 Genome::Genome(int32_t inputs_, int32_t outputs_)
     : fitness(0), fitness_adjusted(0), max_neuron(0), global_rank(0),
       inputs(inputs_), outputs(outputs_) {
@@ -14,8 +15,8 @@ Genome::Genome(int32_t inputs_, int32_t outputs_)
     throw std::invalid_argument("received negative value");
   }
 }
-/*
-void Genome::copy(Genome other) {
+
+void Genome::copy(const Genome &other) {
   fitness = other.fitness;
   fitness_adjusted = other.fitness_adjusted;
   max_neuron = other.max_neuron;
@@ -32,24 +33,42 @@ void Genome::copy(Genome other) {
   mutation_chance_rates.disable = other.mutation_chance_rates.disable;
   mutation_chance_rates.step = other.mutation_chance_rates.step;
 
-  genes = vector<Gene>(other);
-  network.insert(other.network.begin(), other.network.end());
+  genes = other.genes;
+  network = other.network;
+}
+
+void Genome::swap(Genome &other) {
+  using std::swap;
+  swap(fitness, other.fitness);
+  swap(fitness_adjusted, other.fitness_adjusted);
+  swap(max_neuron, other.max_neuron);
+  swap(global_rank, other.global_rank);
+  swap(inputs, other.inputs);
+  swap(outputs, other.outputs);
+
+  swap(mutation_chance_rates.connection,
+       other.mutation_chance_rates.connection);
+  swap(mutation_chance_rates.disturb, other.mutation_chance_rates.disturb);
+  swap(mutation_chance_rates.link, other.mutation_chance_rates.link);
+  swap(mutation_chance_rates.bias, other.mutation_chance_rates.bias);
+  swap(mutation_chance_rates.node, other.mutation_chance_rates.node);
+  swap(mutation_chance_rates.enable, other.mutation_chance_rates.enable);
+  swap(mutation_chance_rates.disable, other.mutation_chance_rates.disable);
+  swap(mutation_chance_rates.step, other.mutation_chance_rates.step);
+
+  swap(genes, other.genes);
+  swap(network, other.network);
 }
 
 Genome::Genome(const Genome &other) { copy(other); }
 
-Genome &Genome::operator=(const Genome &other) {
-  copy(other);
+Genome &Genome::operator=(Genome other) {
+  swap(other);
   return *this;
 }
 
-Genome::Genome(Genome &&other) { copy(other); }
+Genome::Genome(Genome &&other) { swap(other); }
 
-Genome &Genome::operator=(Genome &&other) {
-  copy(other);
-  return *this;
-}
-*/
 bool Genome::operator==(const Genome &other) const {
   return fitness == other.fitness &&
          fitness_adjusted == other.fitness_adjusted &&
@@ -155,7 +174,7 @@ int32_t Genome::random_neuron(const bool &non_input) const {
     }
   }
   srand((unsigned int)time(NULL));
-  return neurons[static_cast<size_t>(rand() % ((int)neurons.size()))];
+  return random_element(neurons);
 }
 
 bool Genome::constains_link(const Gene &link) const {
@@ -203,15 +222,17 @@ void Genome::node_mutate() {
   if (genes.size() == 0)
     return;
   max_neuron++;
-  Gene &gene = genes[rand() % genes.size()];
+  Gene &gene = random_element(genes);
   if (!gene.enabled)
     return;
   gene.enabled = false;
+
   Gene inp1(gene);
   inp1.out = (max_neuron);
   inp1.weight = (1.0);
   inp1.innovation = (Pool::innovate());
   inp1.enabled = true;
+
   genes.push_back(inp1);
 
   Gene gene2(gene);
@@ -222,15 +243,15 @@ void Genome::node_mutate() {
 }
 
 void Genome::toggle_enable(const bool &enable) {
-  vector<Gene *> candidates;
-  for (auto i = genes.begin(); i != genes.end(); ++i) {
-    if (i->enabled == !enable) {
-      candidates.push_back(&(*i));
+  vector<int32_t> candidates;
+  for (int32_t i = 0; i != genes.size(); ++i) {
+    if (genes[i].enabled == !enable) {
+      candidates.push_back(i);
     }
   }
   if (candidates.size() == 0)
     return;
-  auto &random_candidate = *candidates[rand() % candidates.size()];
+  auto &random_candidate = genes[random_element(candidates)];
   random_candidate.enabled = (!random_candidate.enabled);
 }
 
@@ -352,7 +373,6 @@ bool Genome::load(ifstream &ifs) {
 ****************************************************/
 
 void Genome::reset_network_neurons() {
-  check_rep();
 
   for (int32_t i = 0; i < inputs; ++i) {
     network[i].clear();
@@ -388,6 +408,7 @@ bool Genome::validate_input(const vector<int32_t> &inputs_) const {
 }
 
 void Genome::update_network_weights(const vector<int32_t> &inputs) {
+  check_rep();
   for (int32_t i = 0; i < this->inputs; ++i) {
     network[i].weight = inputs[i];
   }

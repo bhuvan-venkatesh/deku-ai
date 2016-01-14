@@ -1,10 +1,49 @@
 #include "species.hpp"
 #include <ctime>
 #include <cstdlib>
+#include <algorithm>
 
 Species::Species(int32_t inputs_, int32_t outputs_)
     : top_fitness(0), staleness(0), average_fitness(0), inputs(inputs_),
       outputs(outputs_) {}
+
+Species::Species(const Species &other) { copy(other); }
+
+Species::Species(Species &&other) { swap(other); }
+
+Species &Species::operator=(Species other) {
+  swap(other);
+  return *this;
+}
+
+void Species::copy(const Species &other) {
+  top_fitness = other.top_fitness;
+  staleness = other.staleness;
+  average_fitness = other.average_fitness;
+  inputs = other.inputs;
+  outputs = other.outputs;
+  genomes = other.genomes;
+}
+
+void Species::swap(Species &other) {
+  using std::swap;
+
+  swap(top_fitness, other.top_fitness);
+  swap(staleness, other.staleness);
+  swap(average_fitness, other.average_fitness);
+  swap(inputs, other.inputs);
+  swap(outputs, other.outputs);
+  swap(genomes, other.genomes);
+}
+
+bool Species::operator<(const Species &other) const {
+  return average_fitness < other.average_fitness;
+}
+
+bool Species::operator==(const Species &other) const {
+  return top_fitness == other.top_fitness && staleness == other.staleness &&
+         average_fitness == other.average_fitness && genomes == other.genomes;
+}
 
 void Species::calculate_average_fitness() {
   int32_t total = 0;
@@ -21,10 +60,10 @@ Genome Species::breed_child() {
     return not_temp;
   }
 
-  Genome child = genomes[static_cast<size_t>(rand() % genomes.size())];
+  Genome child = random_element(genomes);
   if (rand() / (double)RAND_MAX < crossover_chance) {
-    auto &g1 = genomes[static_cast<size_t>(rand() % genomes.size())];
-    auto &g2 = genomes[static_cast<size_t>(rand() % genomes.size())];
+    auto &g1 = random_element(genomes);
+    auto &g2 = random_element(genomes);
     auto scoped = g1.crossover(g2);
     child = scoped;
   }
