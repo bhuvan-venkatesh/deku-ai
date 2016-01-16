@@ -13,16 +13,14 @@ using std::vector;
 
 struct Pool : public Serial {
 public:
-  Pool(int32_t inputs_, int32_t outputs_);
   static int32_t innovate();
   static int32_t innovation; // Serves as a counter
 
+  Pool(int32_t inputs_, int32_t outputs_);
   Pool(const Pool &other);
   Pool(Pool &&other);
   Pool &operator=(Pool other);
-
-  void copy(const Pool &other);
-  void swap(Pool &other);
+  virtual ~Pool() {}
 
   vector<bool> evaluate(const vector<int32_t> &inputs);
 
@@ -32,18 +30,12 @@ public:
   void set_top();
   void next_genome();
   bool fitness_measured() const;
-  void generate_top_network() { top_genome().generate_network(); }
+  void generate_top_network();
 
-  inline Genome &top_genome() {
-    return species[static_cast<size_t>(current_species)]
-        .genomes[static_cast<size_t>(current_genome)];
-  }
-  inline void reset_frame() { current_frame = 0; }
-
-  void advance_frame() { ++current_frame; }
-
-  int32_t get_frame() { return current_frame; }
-
+  Genome &top_genome();
+  void reset_frame();
+  void advance_frame();
+  int32_t get_frame();
   void update_fitness(int32_t new_fitness);
 
 private:
@@ -62,4 +54,7 @@ private:
   void remove_weak_species();
   void add_to_species(Genome child);
   void new_generation();
+
+  void copy(const Pool &other);
+  void swap(Pool &other);
 };

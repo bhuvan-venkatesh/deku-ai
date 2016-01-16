@@ -20,15 +20,11 @@
 using std::unique_ptr;
 using std::vector;
 using std::int32_t;
-using std::unordered_map;
 using std::string;
 using std::cout;
 
-// This has the first input elements as the input neurons
-// The next elements as intermediate nodes
-// The final output elements as output nodes
+using std::unordered_map;
 typedef unordered_map<int32_t, Neuron> NetworkMap;
-// In case there is a need to change later
 
 template <typename T> T &random_element(vector<T> &elems) {
   if (elems.size() == 0)
@@ -53,12 +49,74 @@ class Genome : public Serial
 #endif
 {
 public:
+  Genome(int32_t inputs_, int32_t outputs_);
+  Genome(const Genome &other);
+  Genome(Genome &&other);
+  Genome &operator=(Genome other);
+  virtual ~Genome(){};
+
+  bool operator==(const Genome &other) const;
+  bool operator<(const Genome &other) const;
+  bool operator>(const Genome &other) const;
+
+  void generate_network();
+  vector<bool> evaluate(vector<int32_t> inputs);
+  void mutate();
+  Genome crossover(const Genome &other) const;
+  bool same_species(const Genome &other) const;
+
+  bool save(ofstream &ofs) const;
+  bool load(ifstream &ifs);
+
+  void check_rep() const;
+
   int32_t fitness;
+  int32_t global_rank;
+
+private:
+  /* Helper methods for constructors */
+  void copy(const Genome &other);
+  void swap(Genome &other);
+
+  /* Helper methods for generate_network() */
+  void reset_network_neurons();
+  void connect_neurons();
+  void initialize_network_neuron(int32_t number);
+
+  /* Helper methods for evaluate() */
+  bool validate_input(const vector<int32_t> &inputs) const;
+  void update_network_weights(const vector<int32_t> &inputs);
+  vector<bool> collect_button_commands();
+  void evaluate_network();
+
+  /* Helper methods for mutate */
+  void point_mutate();
+  void link_mutate(const bool &force_bias);
+  bool contains_link(const Gene &link) const;
+  void node_mutate();
+  void toggle_enable(const bool &enabled);
+  int call_times(float p);
+  bool is_input_neuron(int32_t neuron_number) const;
+
+  /* Helper methods for same_species */
+  double disjoint(const Genome &other) const;
+  double weights(const Genome &other) const;
+
+  /* Randomized helper methods */
+  Genome random_gene_swap(const Genome &higher_fitness,
+                          const Genome &lower_fitness) const;
+  int32_t random_neuron(const bool &non_input) const;
+  double rand_double();
+  template <typename T> void mutate_rate(T &rate);
+
+  /* Private Members */
   int32_t fitness_adjusted;
   int32_t max_neuron;
-  int32_t global_rank;
   int32_t inputs;
   int32_t outputs;
+
+  NetworkMap network;
+  vector<Gene> genes;
 
   typedef struct {
     float connection = action_chances::mutation_connect;
@@ -71,61 +129,4 @@ public:
     float step = action_chances::step_size;
   } chances;
   chances mutation_chance_rates;
-  vector<Gene> genes;
-  NetworkMap network;
-
-  // void copy(Genome other);
-
-  Genome(int32_t inputs_, int32_t outputs_);
-
-  Genome(const Genome &other);
-  Genome(Genome &&other);
-  Genome &operator=(Genome other);
-
-  void copy(const Genome &other);
-  void swap(Genome &other);
-
-  virtual ~Genome() {}
-
-  bool operator==(const Genome &other) const;
-  bool operator<(const Genome &other) const;
-  bool operator>(const Genome &other) const;
-
-  static Genome basic_genome(int32_t inputs, int32_t outputs);
-  void mutate();
-  void generate_network();
-  vector<bool> evaluate(vector<int32_t> inputs);
-  Genome crossover(const Genome &other) const;
-  int32_t random_neuron(const bool &non_input) const;
-  bool constains_link(const Gene &link) const;
-  void point_mutate();
-  void link_mutate(const bool &force_bias);
-  void node_mutate();
-  void toggle_enable(const bool &enabled);
-  double disjoint(const Genome &other) const;
-  double weights(const Genome &other) const;
-  int call_times(float p);
-
-  bool same_species(const Genome &other) const;
-
-  bool save(ofstream &ofs) const;
-  bool load(ifstream &ifs);
-
-  void check_rep() const;
-
-private:
-  void reset_network_neurons();
-  void connect_neurons();
-  bool validate_input(const vector<int32_t> &inputs) const;
-  void initialize_network_neuron(int32_t number);
-  void update_network_weights(const vector<int32_t> &inputs);
-  void evaluate_network();
-  vector<bool> collect_button_commands();
-
-  Genome random_gene_swap(const Genome &higher_fitness,
-                          const Genome &lower_fitness) const;
-  double rand_double();
-  bool is_input_neuron(int32_t neuron_number) const;
-
-  template <typename T> void mutate_rate(T &rate);
 };

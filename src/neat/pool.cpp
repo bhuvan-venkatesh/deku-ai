@@ -196,6 +196,19 @@ void Pool::update_fitness(int32_t new_fitness) {
   }
 }
 
+void Pool::generate_top_network() { top_genome().generate_network(); }
+
+Genome &Pool::top_genome() {
+  return species[static_cast<size_t>(current_species)]
+      .genomes[static_cast<size_t>(current_genome)];
+}
+
+void Pool::reset_frame() { current_frame = 0; }
+
+void Pool::advance_frame() { ++current_frame; }
+
+int32_t Pool::get_frame() { return current_frame; }
+
 bool Pool::save(ofstream &ofs) const {
   ofs << innovation << "\n" << generation << "\n" << current_species << "\n"
       << current_genome << "\n" << current_frame << "\n" << max_fitness << "\n"

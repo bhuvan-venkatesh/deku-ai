@@ -21,11 +21,29 @@ void Neuron::copy(const Neuron &here) {
   weight = here.weight;
   incoming = here.incoming;
 }
+
 void Neuron::swap(Neuron &other) {
   using std::swap;
   swap(weight, other.weight);
   swap(incoming, other.incoming);
 }
+
+bool Neuron::evaluate() const { weight > 0; }
+
+void Neuron::propogate(const std::unordered_map<int32_t, Neuron> &map,
+                       const std::vector<Gene> genes) {
+
+  double sum = 0;
+  for (auto gene = incoming.begin(); gene != incoming.end(); ++gene) {
+    const Gene &ref = genes[(*gene)];
+    auto it = map.find(ref.into);
+    if (it != map.end())
+      sum += ref.weight * it->second.weight;
+  }
+  weight = sigmoid(sum);
+}
+void Neuron::add_gene(int32_t gene_number) { incoming.push_back(gene_number); }
+void Neuron::set_weight(double weight_) { weight = weight_; }
 
 bool Neuron::save(ofstream &ofs) const {
   ofs << weight << "\n";
@@ -35,6 +53,7 @@ bool Neuron::save(ofstream &ofs) const {
   }
   return true;
 }
+
 bool Neuron::load(ifstream &ifs) {
   ifs >> weight;
   size_t incoming_size;

@@ -83,15 +83,6 @@ bool Genome::operator>(const Genome &other) const {
   return fitness > other.fitness;
 }
 
-Genome Genome::basic_genome(int32_t inputs, int32_t outputs) {
-  Genome return_value(inputs, outputs);
-
-  return_value.max_neuron = inputs - 1;
-  return_value.mutate();
-
-  return return_value;
-}
-
 void Genome::mutate() {
   // TODO: Generated stub, find an appropriate
   // Mutation algorithm
@@ -176,7 +167,7 @@ int32_t Genome::random_neuron(const bool &non_input) const {
   return random_element(neurons);
 }
 
-bool Genome::constains_link(const Gene &link) const {
+bool Genome::contains_link(const Gene &link) const {
   for (auto i = genes.begin(); i != genes.end(); ++i) {
     if (i->same_link(link)) {
       return true;
@@ -208,7 +199,7 @@ void Genome::link_mutate(const bool &force_bias) {
   if (force_bias) {
     link.into = inputs - 1;
   }
-  if (constains_link(link)) {
+  if (contains_link(link)) {
     return;
   }
   link.innovation = Pool::innovate();
@@ -339,7 +330,6 @@ bool Genome::load(ifstream &ifs) {
     ifs >> position;
     temp.load(ifs);
 
-    // We are done deserializing one neuron and linking properly
     network[position] = temp;
   }
 
@@ -386,7 +376,7 @@ void Genome::connect_neurons() {
     Gene &i = genes[j];
     if (i.enabled) {
       initialize_network_neuron(i.out);
-      network[i.out].incoming.push_back(j);
+      network[i.out].add_gene(j);
       initialize_network_neuron(i.into);
     }
   }
@@ -400,7 +390,7 @@ void Genome::initialize_network_neuron(int32_t number) {
 
 bool Genome::validate_input(const vector<int32_t> &inputs_) const {
   if (inputs_.size() != inputs) {
-    std::cout << "Incorrect number of inputs to the network";
+    std::cerr << "Incorrect number of inputs to the network\n";
     return false;
   }
   return true;
@@ -409,23 +399,13 @@ bool Genome::validate_input(const vector<int32_t> &inputs_) const {
 void Genome::update_network_weights(const vector<int32_t> &inputs) {
   check_rep();
   for (int32_t i = 0; i < this->inputs; ++i) {
-    network[i].weight = inputs[i];
+    network[i].set_weight(inputs[i]);
   }
 }
 
 void Genome::evaluate_network() {
-
   for (auto &pair : network) {
-    Neuron &current = pair.second;
-
-    auto &vec_ptr = current.incoming;
-    double sum = 0;
-    for (auto incoming_gene = vec_ptr.begin(); incoming_gene != vec_ptr.end();
-         ++incoming_gene) {
-      Gene &ref = genes[(*incoming_gene)];
-      sum += ref.weight * network[ref.into].weight;
-    }
-    current.weight = current.sigmoid(sum);
+    pair.second.propogate(network, genes);
   }
 }
 
@@ -433,7 +413,7 @@ vector<bool> Genome::collect_button_commands() {
   vector<bool> output_return;
   for (int32_t i = 0; i < outputs; ++i) {
     // > 0 is the test for whether to push button or not
-    output_return.push_back(network[max_nodes + i].weight > 0);
+    output_return.push_back(network[max_nodes + i].evaluate());
   }
   return output_return;
 }
@@ -491,9 +471,6 @@ void Genome::check_rep() const {
   cout << "network size:\t\t" << network.size() << "\n";
 
   cout << "gene size:\t\t" << genes.size() << "\n";
-  /*
-  for (auto i = genes.begin(); i != genes.end(); ++i) {
-    i->save(ofs);
-  }*/
+
   cout << endl;
 }

@@ -12,19 +12,16 @@ public:
   Gene(const Gene &swap);
   Gene(Gene &&rhs);
   Gene &operator=(Gene rhs);
+  virtual ~Gene() {}
 
   bool operator<(const Gene &rhs) const;
-
+  bool operator>(const Gene &rhs) const;
   bool operator==(const Gene &rhs) const;
 
   bool same_link(const Gene &other) const;
 
   bool save(ofstream &ofs) const;
   bool load(ifstream &ifs);
-  virtual ~Gene() {}
-
-  void copy(const Gene &swap);
-  void swap(Gene &other);
 
   /* With alignment -
    20 bytes*/
@@ -36,4 +33,6 @@ public:
   bool enabled;
 
 private:
+  void copy(const Gene &swap);
+  void swap(Gene &other);
 };

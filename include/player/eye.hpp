@@ -1,6 +1,6 @@
 #pragma once
 
-extern "C"{
+extern "C" {
 #include <cairo/cairo.h>
 #include <cairo/cairo-xlib.h>
 }
@@ -16,16 +16,19 @@ extern "C"{
 
 using cv::Mat;
 
-struct Eye{
+struct Eye {
 public:
-	Eye();
-	cv::Mat analyze_screen();
-	bool draw_keypoints;
-	char slop[7];
+  Eye();
+  cv::Mat analyze_screen();
+  bool draw_keypoints;
 
 private:
-	Emulator_Window* window;
+  Emulator_Window *window;
 
-	cairo_surface_t* convert_xlib_to_image_surface(cairo_surface_t* x11_surf,const unsigned int& width, const unsigned int& height);
-	void convert_image_surface_to_mat(cairo_surface_t* img_surf,const unsigned int& width, const unsigned int& height, Mat& ret);
+  cairo_surface_t *convert_xlib_to_image_surface(cairo_surface_t *x11_surf,
+                                                 const unsigned int &width,
+                                                 const unsigned int &height);
+  void convert_image_surface_to_mat(cairo_surface_t *img_surf,
+                                    const unsigned int &width,
+                                    const unsigned int &height, Mat &ret);
 };

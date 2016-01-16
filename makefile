@@ -37,7 +37,7 @@ TEST_BIN_DIR = $(TEST_DIR)/bin
 
 CXX = clang++
 LD = clang++
-CXXFLAGS = -std=c++11 $(H_INCLUDES) -O0 -g -pedantic -Weverything \
+CXXFLAGS = -std=c++11 $(H_INCLUDES) -O0 -g -pedantic \
 -Wno-c++98-compat -Wno-padded -fcolor-diagnostics -ftemplate-backtrace-limit=0
 LDFLAGS = -std=c++11 $(H_INCLUDES) -L/usr/lib -Weverything -pedantic -Wl,--start-group -lcairo \
 -lX11 -lopencv_core -lopencv_features2d -lopencv_flann -lopencv_highgui \
@@ -104,12 +104,6 @@ $(TEST_BIN_DIR):
 
 # Phony targets for convenience
 
-# Check runs all of the boost tests
-
-check: $(TEST_EXE)
-	(cd $(TEST_BIN_DIR) ; rm *txt ; for f in * ; do ./$$f ; done)
-	echo Finished
-
 # Removes Object Files
 
 clean:
@@ -122,6 +116,11 @@ run:
 
 run-asan:
 	ASAN_SYMBOLIZER_PATH=$$(which llvm-symbolizer-3.4) ./$(ASAN_PATH)
+
+# Check runs all of the boost tests
+check: $(TEST_EXE)
+	(cd $(TEST_BIN_DIR) ; rm *txt ; for f in * ; do ./$$f ; done)
+	echo Finished
 
 
 # Special print command to print the value of the variable

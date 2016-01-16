@@ -33,8 +33,7 @@ public:
   bool operator<(const Species &other) const;
   bool operator==(const Species &other) const;
 
+private:
   void copy(const Species &other);
   void swap(Species &other);
-
-private:
 };

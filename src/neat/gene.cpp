@@ -33,6 +33,7 @@ Gene &Gene::operator=(Gene swap_) {
 }
 
 bool Gene::operator<(const Gene &rhs) const { return out < rhs.out; }
+bool Gene::operator>(const Gene &rhs) const { return out > rhs.out; }
 
 bool Gene::operator==(const Gene &rhs) const {
   return innovation == rhs.innovation;

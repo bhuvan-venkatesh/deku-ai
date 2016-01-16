@@ -15,10 +15,10 @@ public:
   Brain();
   void initialize_run();
   void play();
-  void send_signals(const vector<bool> &buttons);
   Snes_Controller controller;
 
 private:
+  void send_signals(const vector<bool> &buttons);
   Pool pool;
   Eye eye;
   Image_Classifier classifier;
