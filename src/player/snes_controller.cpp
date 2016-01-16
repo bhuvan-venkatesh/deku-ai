@@ -1,17 +1,21 @@
 #include "snes_controller.hpp"
 #include <algorithm>
 #include <string>
-#include <fstream>      // std::ifstream
+#include <fstream> // std::ifstream
 #include <cctype>
+#include <ctime>
+#include <iostream>
 #define file_name "bindings.txt"
+#define seconds_to_hold 1
+#define TICKS_PER_SECOND 1000
 
-inline string string_upper(const string& refe){
+inline string string_upper(const string &refe) {
   string ref(refe);
   std::transform(ref.begin(), ref.end(), ref.begin(), ::toupper);
   return ref;
 }
 
-Snes_Controller::Snes_Controller(){
+Snes_Controller::Snes_Controller() {
   bindings["A"] = "Z";
   bindings["B"] = "X";
   bindings["X"] = "A";
@@ -39,65 +43,49 @@ Snes_Controller::Snes_Controller(){
     bindings[lhs] = line;
   }*/
 }
-Snes_Controller& Snes_Controller::a(){
-    return press("A");
+Snes_Controller &Snes_Controller::a() { return press("A"); }
+
+Snes_Controller &Snes_Controller::b() { return press("B"); }
+
+Snes_Controller &Snes_Controller::x() { return press("X"); }
+
+Snes_Controller &Snes_Controller::y() { return press("Y"); }
+
+Snes_Controller &Snes_Controller::up() { return press("UP"); }
+
+Snes_Controller &Snes_Controller::down() { return press("DOWN"); }
+
+Snes_Controller &Snes_Controller::right() { return press("RIGHT"); }
+
+Snes_Controller &Snes_Controller::left() { return press("LEFT"); }
+
+Snes_Controller &Snes_Controller::right_trigger() {
+  return press("RIGHT_TRIGGER");
 }
 
-Snes_Controller& Snes_Controller::b(){
-    return press("B");
+Snes_Controller &Snes_Controller::left_trigger() {
+  return press("LEFT_TRIGGER");
 }
 
-Snes_Controller& Snes_Controller::x(){
-    return press("X");
-}
+Snes_Controller &Snes_Controller::start() { return press("START"); }
 
-Snes_Controller& Snes_Controller::y(){
-    return press("Y");
-}
+Snes_Controller &Snes_Controller::select() { return press("SELECT"); }
 
-Snes_Controller& Snes_Controller::up(){
-    return press("UP");
-}
-
-Snes_Controller& Snes_Controller::down(){
-    return press("DOWN");
-}
-
-Snes_Controller& Snes_Controller::right(){
-    return press("RIGHT");
-}
-
-Snes_Controller& Snes_Controller::left(){
-    return press("LEFT");
-}
-
-Snes_Controller& Snes_Controller::right_trigger(){
-    return press("RIGHT_TRIGGER");
-}
-
-Snes_Controller& Snes_Controller::left_trigger(){
-    return press("LEFT_TRIGGER");
-}
-
-Snes_Controller& Snes_Controller::start(){
-    return press("START");
-}
-
-Snes_Controller& Snes_Controller::select(){
-    return press("SELECT");
-}
-
-void Snes_Controller::load_state(){
+void Snes_Controller::load_state() {
   press("LOAD");
   execute();
 }
 
-void Snes_Controller::execute(){
-    press_keys(buffer);
-    buffer.clear();
+void Snes_Controller::execute() {
+  const char *command = implode(buffer).c_str();
+  buffer.clear();
+  clock_t start = clock();
+  while (clock() - start < TICKS_PER_SECOND * seconds_to_hold) {
+    press_keys(command);
+  }
 }
 
-Snes_Controller& Snes_Controller::press(string stuff){
+Snes_Controller &Snes_Controller::press(string stuff) {
   buffer.push_back(bindings[stuff]);
   return *this;
 }

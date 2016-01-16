@@ -242,8 +242,8 @@ void Genome::node_mutate() {
 }
 
 void Genome::toggle_enable(const bool &enable) {
-  vector<int32_t> candidates;
-  for (int32_t i = 0; i != genes.size(); ++i) {
+  vector<size_t> candidates;
+  for (size_t i = 0; i != genes.size(); ++i) {
     if (genes[i].enabled == !enable) {
       candidates.push_back(i);
     }
@@ -374,10 +374,10 @@ bool Genome::load(ifstream &ifs) {
 void Genome::reset_network_neurons() {
 
   for (int32_t i = 0; i < inputs; ++i) {
-    network[i].clear();
+    network[static_cast<size_t>(i)].clear();
   }
   for (int32_t i = 0; i < outputs; ++i) {
-    network[i + max_nodes].clear();
+    network[static_cast<size_t>(i + max_nodes)].clear();
   }
 }
 

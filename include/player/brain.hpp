@@ -6,19 +6,22 @@
 #include "pool.hpp"
 #include "snes_controller.hpp"
 #include "image_classifier.hpp"
-#define timeout_constant 20;
 
-struct Brain{
+#define FRAMES_PER_SECOND 60
+#define timeout_constant FRAMES_PER_SECOND * 4
+
+struct Brain {
 public:
-	Brain();
-	void initialize_run();
-	void play();
-	void send_signals(const vector<bool>& buttons);
-	Snes_Controller controller;
+  Brain();
+  void initialize_run();
+  void play();
+  void send_signals(const vector<bool> &buttons);
+  Snes_Controller controller;
+
 private:
-	Pool pool;
-	Eye eye;
-	Image_Classifier classifier;
-	int rightmost;
-	int timeout;
+  Pool pool;
+  Eye eye;
+  Image_Classifier classifier;
+  int rightmost;
+  int timeout;
 };

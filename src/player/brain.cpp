@@ -23,65 +23,70 @@ void Brain::play() {
   cv::Mat pic = eye.analyze_screen();
   vector<int32_t> block = classifier.block_classify(pic);
   pic.release();
-
-  if (classifier.prev_x > rightmost) {
-    rightmost = classifier.prev_x;
-    timeout = timeout_constant;
-  }
-  timeout--;
-  int timeout_bonus = pool.get_frame() / 4;
-  if (timeout + timeout_bonus <= 0) {
-    int32_t fitness = rightmost - pool.get_frame() / 2;
-    if (rightmost > 600) {
-      fitness += 1000;
+  cout << classifier.prev_x << "\t" << classifier.prev_y << endl;
+  /*
+    if (classifier.prev_x > rightmost) {
+      rightmost = classifier.prev_x;
+      timeout = timeout_constant;
     }
-    if (fitness == 0) {
-      fitness = -1;
+    timeout--;
+    int timeout_bonus = pool.get_frame() / 4;
+    if (timeout + timeout_bonus <= 0) {
+      int32_t fitness = rightmost - pool.get_frame() / 2;
+      if (rightmost > 600) {
+        fitness += 1000;
+      }
+      if (fitness == 0) {
+        fitness = -1;
+      }
+      pool.update_fitness(fitness);
+      initialize_run();
     }
-    pool.update_fitness(fitness);
-    initialize_run();
-  }
-  pool.advance_frame();
-  vector<bool> should_press = pool.evaluate(block);
-  send_signals(should_press);
+    pool.advance_frame();
+    vector<bool> should_press = pool.evaluate(block);
+    send_signals(should_press);*/
 }
 
 // TODO: Change this more programatically
 void Brain::send_signals(const vector<bool> &buttons) {
-  bool pressed = false;
   for (size_t i = 0; i < buttons.size(); ++i) {
     if (!buttons[i]) {
       continue;
     }
     switch (i) {
-      pressed = true;
     case 0:
       controller.a();
+      std::cout << "Pressed\n";
       break;
     case 1:
       controller.b();
+      std::cout << "Pressed\n";
       break;
     case 2:
       controller.x();
+      std::cout << "Pressed\n";
       break;
     case 3:
       controller.y();
+      std::cout << "Pressed\n";
       break;
     case 4:
       controller.up();
+      std::cout << "Pressed\n";
       break;
     case 5:
       controller.down();
+      std::cout << "Pressed\n";
       break;
     case 6:
       controller.left();
+      std::cout << "Pressed\n";
       break;
     case 7:
       controller.right();
+      std::cout << "Pressed\n";
       break;
     }
   }
-  if (!pressed)
-    controller.right();
   controller.execute();
 }

@@ -1,5 +1,5 @@
 #pragma once
-#define DEBUG TRUE
+#define DEBUG true
 
 class Testable {
 public:

@@ -24,7 +24,7 @@
 # Other patterns
 *.lua
 *test
-bin/*main
-bin/*main-asan
+bin/main
+bin/main-asan
 tests/bin/*
 tests/objs/*
