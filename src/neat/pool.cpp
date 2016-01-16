@@ -10,9 +10,8 @@ Pool::Pool(int32_t inputs_, int32_t outputs_)
     : generation(0), current_species(0), current_genome(0), current_frame(0),
       max_fitness(0), inputs(inputs_), outputs(outputs_) {
   // BI
-  Species first_species(inputs_, outputs_);
   Genome first_genome(inputs_, outputs_);
-  first_species.genomes.push_back(first_genome);
+  Species first_species(inputs_, outputs_, first_genome);
   species.push_back(first_species);
 }
 int32_t Pool::innovate() { return ++Pool::innovation; }
@@ -85,7 +84,7 @@ void Pool::cull_species(bool cut_to_one) {
     if (cut_to_one) {
       remaining = 1;
     }
-    while (remaining-- > 0)
+    while (remaining-- > 0 && s->genomes.size() > 1)
       s->genomes.pop_back();
   }
 }
@@ -134,13 +133,13 @@ void Pool::add_to_species(Genome child) {
   }
 
   if (!found_species) {
-    Species childe(inputs, outputs);
-    childe.genomes.push_back(child);
+    Species childe(inputs, outputs, child);
     species.push_back(childe);
   }
 }
 
 void Pool::new_generation() {
+  std::cout << "1" << std::endl;
   cull_species(false);
   remove_stale_species();
   rank_globally();
@@ -154,11 +153,10 @@ void Pool::new_generation() {
   int added_species = 0;
 
   for (size_t j = 0; j != species.size(); ++j) {
-    Species &s = species[j];
-    s.calculate_average_fitness();
-    int32_t breed = int(s.average_fitness / sum * population);
+    species[j].calculate_average_fitness();
+    int32_t breed = int(species[j].average_fitness / sum * population);
     for (int32_t i = 0; i < breed; ++i) {
-      add_to_species(s.breed_child());
+      add_to_species(species[j].breed_child());
       added_species++;
     }
   }
@@ -170,7 +168,7 @@ void Pool::new_generation() {
     return;
   }
   while (added_species++ < temp) {
-    add_to_species(species[rand() % (species.size() - 1)].breed_child());
+    add_to_species(random_element(species).breed_child());
   }
 
   generation++;
@@ -188,7 +186,7 @@ void Pool::update_fitness(int32_t new_fitness) {
   top_genome().fitness = new_fitness;
   if (new_fitness > max_fitness) {
     max_fitness = new_fitness;
-    ofstream stream("NEAT.dat");
+    ofstream stream("NEAT.dat", std::ofstream::trunc);
     save(stream);
   }
   current_species = 0;
@@ -217,8 +215,13 @@ bool Pool::load(ifstream &ifs) {
   ifs >> stuff;
   species.clear();
   for (size_t i = 0; i < stuff; ++i) {
-    Species temp(inputs, outputs);
+    Species temp(inputs, outputs, Genome(inputs, outputs));
     temp.load(ifs);
+    if (temp.genomes.size() > 1)
+      temp.genomes.erase(std::remove(temp.genomes.begin(),
+                                     temp.genomes.begin() + 1,
+                                     Genome(inputs, outputs)),
+                         temp.genomes.end());
     species.push_back(temp);
   }
   return true;
@@ -244,6 +247,12 @@ void Pool::set_top() {
 }
 
 void Pool::next_genome() {
+  if (current_species >= species.size()) {
+    current_genome = 0;
+    current_species = 0;
+    new_generation();
+  }
+
   current_genome++;
   if (current_genome >= species[current_species].genomes.size()) {
     current_genome = 0;
@@ -254,6 +263,7 @@ void Pool::next_genome() {
     }
   }
 }
+
 bool Pool::fitness_measured() const {
   if (current_species >= species.size())
     return false;

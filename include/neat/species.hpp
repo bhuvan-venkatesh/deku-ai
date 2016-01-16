@@ -25,7 +25,7 @@ public:
   void calculate_average_fitness();
   Genome breed_child();
 
-  Species(int32_t inputs_, int32_t outputs_);
+  Species(int32_t inputs_, int32_t outputs_, Genome starter);
   Species(const Species &other);
   Species(Species &&other);
   Species &operator=(Species other);

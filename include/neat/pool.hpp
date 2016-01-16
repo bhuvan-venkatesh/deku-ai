@@ -32,15 +32,9 @@ public:
   void set_top();
   void next_genome();
   bool fitness_measured() const;
-
-  inline Genome &top_genome() {
-    return species[static_cast<size_t>(current_species)]
-        .genomes[static_cast<size_t>(current_genome)];
-  }
-
   void generate_top_network() { top_genome().generate_network(); }
 
-  inline const Genome &top_genome() const {
+  inline Genome &top_genome() {
     return species[static_cast<size_t>(current_species)]
         .genomes[static_cast<size_t>(current_genome)];
   }

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cstdlib> /* srand, rand */
 #include <ctime>
-#include <stdexcept>
 using std::cout;
 
 Genome::Genome(int32_t inputs_, int32_t outputs_)
@@ -33,8 +32,8 @@ void Genome::copy(const Genome &other) {
   mutation_chance_rates.disable = other.mutation_chance_rates.disable;
   mutation_chance_rates.step = other.mutation_chance_rates.step;
 
-  genes = other.genes;
-  network = other.network;
+  genes = vector<Gene>(other.genes);
+  network = NetworkMap(other.network);
 }
 
 void Genome::swap(Genome &other) {
@@ -233,13 +232,13 @@ void Genome::node_mutate() {
   inp1.innovation = (Pool::innovate());
   inp1.enabled = true;
 
-  genes.push_back(inp1);
-
   Gene gene2(gene);
   gene2.into = (max_neuron);
   gene2.innovation = (Pool::innovate());
   gene2.enabled = true;
+
   genes.push_back(gene2);
+  genes.push_back(inp1);
 }
 
 void Genome::toggle_enable(const bool &enable) {

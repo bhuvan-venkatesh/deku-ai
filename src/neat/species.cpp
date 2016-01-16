@@ -3,13 +3,18 @@
 #include <cstdlib>
 #include <algorithm>
 
-Species::Species(int32_t inputs_, int32_t outputs_)
+Species::Species(int32_t inputs_, int32_t outputs_, Genome starter)
     : top_fitness(0), staleness(0), average_fitness(0), inputs(inputs_),
-      outputs(outputs_) {}
+      outputs(outputs_) {
+  genomes.push_back(starter);
+}
 
 Species::Species(const Species &other) { copy(other); }
 
-Species::Species(Species &&other) { swap(other); }
+Species::Species(Species &&other)
+    : Species(other.inputs, other.outputs, other.genomes[0]) {
+  swap(other);
+}
 
 Species &Species::operator=(Species other) {
   swap(other);
@@ -55,6 +60,7 @@ void Species::calculate_average_fitness() {
 
 Genome Species::breed_child() {
   srand(time(NULL));
+
   if (genomes.size() == 0) {
     Genome not_temp(inputs, outputs);
     return not_temp;
@@ -62,9 +68,9 @@ Genome Species::breed_child() {
 
   Genome child = random_element(genomes);
   if (rand() / (double)RAND_MAX < crossover_chance) {
-    auto &g1 = random_element(genomes);
-    auto &g2 = random_element(genomes);
-    auto scoped = g1.crossover(g2);
+    Genome g1 = random_element(genomes);
+    Genome g2 = random_element(genomes);
+    Genome scoped = g1.crossover(g2);
     child = scoped;
   }
 

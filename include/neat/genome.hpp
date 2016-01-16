@@ -9,6 +9,7 @@
 
 #include "neuron.hpp"
 #include "serial.hpp"
+#include "testable.hpp"
 
 #define max_nodes 10000
 #define delta_disjoint 2.0
@@ -29,7 +30,7 @@ using std::cout;
 typedef unordered_map<int32_t, Neuron> NetworkMap;
 // In case there is a need to change later
 
-template <typename T> T &random_element(vector<T> elems) {
+template <typename T> T &random_element(vector<T> &elems) {
   if (elems.size() == 0)
     throw std::invalid_argument("No Elements");
   else if (elems.size() == 1)
@@ -45,7 +46,12 @@ const static float mutation_connect = (float)0.25, disturb = (float)0.9,
                    disable_mutation = (float)0.4, enable_mutation = (float)0.2;
 }
 
-class Genome : public Serial {
+class Genome : public Serial
+#if DEBUG
+               ,
+               public Testable
+#endif
+{
 public:
   int32_t fitness;
   int32_t fitness_adjusted;

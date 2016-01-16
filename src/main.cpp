@@ -4,28 +4,31 @@
 
 using cv::KeyPoint;
 
-int main(){
-	Brain brain;
-	brain.initialize_run();
+int main() {
+  Brain brain;
+  brain.initialize_run();
 
-	const int FRAMES_PER_SECOND = 60;
-	const int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
+  const int FRAMES_PER_SECOND = 60;
+  const int SKIP_TICKS = 1000 / FRAMES_PER_SECOND;
 
-	clock_t next_game_tick = clock();
+  clock_t next_game_tick = clock();
 
-	int sleep_time = 0;
+  int sleep_time = 0;
 
-	while( true ) {
-	   brain.play();
+  while (true) {
+    brain.controller.right();
+    brain.controller.execute();
+    /*
+brain.play();
 
-	   next_game_tick += SKIP_TICKS;
-	   sleep_time = next_game_tick - clock();
-	   if( sleep_time >= 0 ) {
-	       sleep( sleep_time );
-	   }
-	   else {
-	       // Shit, we are running behind!
-	   }
-	}
-	return 0;
+next_game_tick += SKIP_TICKS;
+sleep_time = next_game_tick - clock();
+if( sleep_time >= 0 ) {
+   sleep( sleep_time );
+}
+else {
+   // Shit, we are running behind!
+}*/
+  }
+  return 0;
 }
