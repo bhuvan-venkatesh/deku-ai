@@ -15,11 +15,11 @@ int main() {
   int sleep_time = 0;
 
   while (true) {
-    /*
+
     brain.controller.right();
     brain.controller.execute();
-    */
-    brain.play();
+
+    // brain.play();
 
     next_game_tick += SKIP_TICKS;
     sleep_time = next_game_tick - clock();

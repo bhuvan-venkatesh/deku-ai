@@ -117,22 +117,7 @@ vector<int32_t> Image_Classifier::block_classify(const Mat &image) {
   for (auto i = keypoints.begin(); i != keypoints.end(); ++i) {
     cv::Point2f color = i->pt;
     ret[(int)(color.x / width * side + color.y / height) % blocks] += 1;
-  } /*
-
-vector<string> files = {"1.png", "2.jpg", "3.png"};
-
-for (auto i = files.begin(); i != files.end(); ++i) {
- Mat templat = imread("1.png", CV_LOAD_IMAGE_GRAYSCALE);
- imshow("1", templat);
- cv::waitKey(0);
- templates.push_back(templat);
-
- vector<KeyPoint> keypoints_object = get_keypoints(templat);
- template_keypoints.push_back(keypoints_object);
-
- Mat descriptors_object = get_descriptors(templat, keypoints_object);
- template_descriptors.push_back(descriptors_object);
-}*/
+  }
 
   for (size_t i = 0; i < ret.size(); ++i) {
     if (ret[i] > key_threshold)
@@ -148,10 +133,11 @@ void Image_Classifier::detect_mario(const Mat &img_scene, vector<int32_t> &ret,
                                     const int &block_height) {
 
   for (size_t i = 0; i != templates.size(); ++i) {
-    auto &descriptors_object = template_descriptors[i];
-    auto &keypoints_object = template_keypoints[i];
-    const auto &cols = templates[i].cols;
-    const auto &rows = templates[i].rows;
+
+    auto descriptors_object = template_descriptors[i];
+    auto keypoints_object = template_keypoints[i];
+    const auto cols = templates[i].cols;
+    const auto rows = templates[i].rows;
 
     vector<KeyPoint> keypoints_scene = get_keypoints(img_scene);
     Mat descriptors_scene = get_descriptors(img_scene, keypoints_scene);
@@ -187,11 +173,11 @@ void Image_Classifier::detect_mario(const Mat &img_scene, vector<int32_t> &ret,
 
     // TODO: Check if it is within reason, if it is then colors those blocks
     // good
-    if (abs(prev_y - mario.y) < mario_tolerance &&
-            abs(prev_x - mario.x) < mario_tolerance ||
-        prev_y == -1 && prev_x == -1) {
+    if ((abs(prev_y - mario.y) < mario_tolerance &&
+         abs(prev_x - mario.x) < mario_tolerance) ||
+        (prev_y == -1 && prev_x == -1)) {
       prev_y = mario.y;
-      prev_x = mario.y;
+      prev_x = mario.x;
       for (int32_t cell = (int)(mario.x / block_width * side +
                                 mario.y / block_height);
            height > 0; height -= block_height, cell += side) {

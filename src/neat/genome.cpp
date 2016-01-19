@@ -9,7 +9,6 @@ using std::cout;
 Genome::Genome(int32_t inputs_, int32_t outputs_)
     : fitness(0), fitness_adjusted(0), max_neuron(0), global_rank(0),
       inputs(inputs_), outputs(outputs_) {
-  // generate_network();
   if (inputs_ < 1 || outputs_ < 1) {
     throw std::invalid_argument("received negative value");
   }
