@@ -1,4 +1,4 @@
-#include "pool.hpp"
+#include "pool.hpp" //
 #include <algorithm>
 #include <tuple>
 using std::tuple;
@@ -9,23 +9,25 @@ int32_t Pool::innovation = 0;
 Pool::Pool(int32_t inputs_, int32_t outputs_)
     : generation(0), current_species(0), current_genome(0), current_frame(0),
       max_fitness(0), inputs(inputs_), outputs(outputs_) {
-  // BI
+  /*Constructor for the pool of algorithms that utilizes a 32-bit signed integer inputs_ as bounded input.
+  At the start of the pool, there is only one genetic algorithm (the common ancestor) which is randomly generated.*/
   Genome first_genome(inputs_, outputs_);
   Species first_species(inputs_, outputs_, first_genome);
   species.push_back(first_species);
 }
-int32_t Pool::innovate() { return ++Pool::innovation; }
+int32_t Pool::innovate() { return ++Pool::innovation; }//Updates the evolutionary phase count.
 
-Pool::Pool(const Pool &other) { copy(other); }
+Pool::Pool(const Pool &other) { copy(other); }//Alternate constructor for preserving a desired pool.
 
-Pool::Pool(Pool &&other) { swap(other); }
+Pool::Pool(Pool &&other) { swap(other); }//Alternate constructure used for arranging the pools in order of most desired.
 
-Pool &Pool::operator=(Pool other) {
+Pool &Pool::operator=(Pool other) {//The created operator used for switching pools.
   swap(other);
   return *this;
 }
 
 void Pool::copy(const Pool &other) {
+  //Attributes from one pool can be replicated to another pool.
   species = other.species;
   generation = other.generation;
   current_species = other.current_species;
@@ -37,7 +39,7 @@ void Pool::copy(const Pool &other) {
 }
 void Pool::swap(Pool &other) {
   using std::swap;
-
+  //Using pool's swaping operator attributes between 2 pools can be swapped around.
   swap(species, other.species);
   swap(generation, other.generation);
   swap(current_species, other.current_species);
@@ -49,10 +51,10 @@ void Pool::swap(Pool &other) {
 }
 
 void Pool::rank_globally() {
-  /*You have to use pointers or else the original argument
-          Will not be changed and you cannot use references in templates*/
-
+  /*Dictates the best possible pool in order to envoke evolution*/
   vector<tuple<int, int, int>> global;
+  //s: pointer to an individual species in global
+  //Iterates through every species in the pool and 
   for (size_t i = 0; i != species.size(); ++i) {
     Species &s = species[i];
     for (size_t j = 0; j != s.genomes.size(); ++j) {
