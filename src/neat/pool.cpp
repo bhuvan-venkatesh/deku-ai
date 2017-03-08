@@ -53,18 +53,20 @@ void Pool::swap(Pool &other) {
 void Pool::rank_globally() {
   /*Dictates the best possible pool in order to envoke evolution*/
   vector<tuple<int, int, int>> global;
-  //s: pointer to an individual species in global
-  //Iterates through every species in the pool and 
+  //Iterates through every species in the pool and places them into a roster tuple called global.
   for (size_t i = 0; i != species.size(); ++i) {
+    //s: pointer to an individual species in global.
     Species &s = species[i];
     for (size_t j = 0; j != s.genomes.size(); ++j) {
       global.push_back(tuple<int, int, int>(i, j, s.genomes[j].fitness));
     }
   }
+  //std::sort(...): Compares two species to see who has a better fitness.
   std::sort(global.begin(), global.end(),
             [](tuple<int, int, int> a, tuple<int, int, int> b) {
               return get<2>(a) < get<2>(b);
             });
+  //Iterates from highest to lowest rank in the tuple global, and provides a corresponding number for ranking.
   for (int32_t i = 0; i < global.size(); ++i) {
     auto tuple = global[i];
     species[get<0>(tuple)].genomes[get<1>(tuple)].global_rank = i + 1;
@@ -72,7 +74,10 @@ void Pool::rank_globally() {
 }
 
 int32_t Pool::calculate_average_fitness() {
+  //Takes the sum of all of the fitnesses and divides that value by the number of species, which is then returned.
+  //total: the sum of all of the species' fintess values.
   int32_t total = 0;
+  //Adds the fitness values of all the species in the pool.
   for (auto s = species.begin(); s != species.end(); ++s) {
     total += s->average_fitness;
   }
@@ -80,6 +85,8 @@ int32_t Pool::calculate_average_fitness() {
 }
 
 void Pool::cull_species(bool cut_to_one) {
+  //Removes all of the species with too low of a fitness
+  //cut_to_one: bool that dictates whether only the top ranked should remain.
   for (auto s = species.begin(); s != species.end(); ++s) {
     std::sort(s->genomes.begin(), s->genomes.end(), std::greater<Genome>());
     int32_t remaining = std::ceil(species.size() / 2);
@@ -93,7 +100,7 @@ void Pool::cull_species(bool cut_to_one) {
 
 void Pool::remove_stale_species() {
   rank_globally();
-
+  
   for (int32_t i = 0; i < species.size(); ++i) {
     Species s = species[i];
     std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
@@ -280,8 +287,11 @@ void Pool::next_genome() {
 }
 
 bool Pool::fitness_measured() const {
+  //Pool:fitness_measured() : checks to see whether the species fitness was measured.
+  //if the species lands outside of the size of the species list, fitness has not been measured.
   if (current_species >= species.size())
     return false;
+  //if the genome lands outside of the size of the genome list, fitness has not been measured.
   else if (current_genome >= species[current_species].genomes.size()) {
     return false;
   }
