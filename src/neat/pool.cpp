@@ -1,4 +1,4 @@
-#include "pool.hpp" //
+#include "pool.hpp"
 #include <algorithm>
 #include <tuple>
 using std::tuple;
@@ -93,22 +93,26 @@ void Pool::cull_species(bool cut_to_one) {
     if (cut_to_one) {
       remaining = 1;
     }
+    //removes all of the most recent additions to a species genomes (the least fit genes).
     while (remaining-- > 0 && s->genomes.size() > 1)
       s->genomes.pop_back();
   }
 }
 
 void Pool::remove_stale_species() {
-  rank_globally();
   
+  rank_globally(); //Orders the most diserable species in decending fitness order.
   for (int32_t i = 0; i < species.size(); ++i) {
+    //Organizes the species from decending order, assigning a staleness value to indicate which genomes and overall species are not desirable.
     Species s = species[i];
     std::sort(s.genomes.begin(), s.genomes.end(), std::greater<Genome>());
-    s.staleness++;
+    s.staleness++;//As i increases, the desirability of the species decreases.
+    //The most desireable genome is recorded and given a staleness of 0 to ensure healthier/more successful offspring.
     if (s.genomes[0].fitness > s.top_fitness) {
       s.top_fitness = s.genomes[0].fitness;
       s.staleness = 0;
     }
+    //Removes the species that do not fit the following requirements for natural seletion purposes.
     if (s.staleness > stale_species && s.top_fitness <= max_fitness) {
       species.erase(
           std::remove(species.begin() + i, species.begin() + i + 1, s),
@@ -119,8 +123,9 @@ void Pool::remove_stale_species() {
 }
 
 void Pool::remove_weak_species() {
-
+  //Determines the fate of a enome: whether it is worth carrying it through to the next generation.
   auto sum = calculate_average_fitness();
+  //For every species, its fitness is not better than or equivalent to the overall fitness of the generation, the species is terminated.
   for (int32_t i = 0; i < species.size(); ++i) {
     Species &s = species[i];
     int32_t breed = int(s.average_fitness / sum * population);
@@ -133,14 +138,16 @@ void Pool::remove_weak_species() {
 }
 
 void Pool::add_to_species(Genome child) {
+  //Attempts to add a new species into the pool.
   bool found_species = false;
+  //If the child shares a common genome, it becomes part of that species.
   for (auto i = species.begin(); i != species.end() && !found_species; ++i) {
     if (child.same_species(i->genomes[0])) {
       i->genomes.push_back(child);
       found_species = true;
     }
   }
-
+  //However, if no current species shares the same genome, a new species is created.
   if (!found_species) {
     Species childe(inputs, outputs, child);
     species.push_back(childe);
@@ -184,6 +191,7 @@ void Pool::new_generation() {
 }
 
 vector<bool> Pool::evaluate(const vector<int32_t> &inputs) {
+  //
   Species &current_spec = species[current_species];
   Genome &current_gen = current_spec.genomes[current_genome];
   current_gen.generate_network();
@@ -192,12 +200,16 @@ vector<bool> Pool::evaluate(const vector<int32_t> &inputs) {
 }
 
 void Pool::update_fitness(int32_t new_fitness) {
+  //Stores a new fitness value (new_fitness) for a selected genome.
   top_genome().fitness = new_fitness;
+  //max_fitness is updated if the observed fitness is greater. The new data is then ported to NEAT.dat for future sessions.
   if (new_fitness > max_fitness) {
     max_fitness = new_fitness;
     ofstream stream("NEAT.dat", std::ofstream::trunc);
     save(stream);
   }
+  //This section cycles through the species that have not yet undergone the updated process, stating from the beginning of the tuple
+  //and concluding at the end of the genome of a species or a generation of species.
   current_species = 0;
   current_genome = 0;
   while (fitness_measured()) {
@@ -208,6 +220,7 @@ void Pool::update_fitness(int32_t new_fitness) {
 void Pool::generate_top_network() { top_genome().generate_network(); } //Produces a network of the top genomes to enforce survival of the fittest.
 
 Genome &Pool::top_genome() {
+  //Returns the genome with the highest fitness for natural selection.
   return species[static_cast<size_t>(current_species)]
       .genomes[static_cast<size_t>(current_genome)];
 }
