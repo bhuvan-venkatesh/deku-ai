@@ -212,13 +212,14 @@ Genome &Pool::top_genome() {
       .genomes[static_cast<size_t>(current_genome)];
 }
 
-void Pool::reset_frame() { current_frame = 0; }
+void Pool::reset_frame() { current_frame = 0; }//Reassigns to the beginning of a genome.
 
-void Pool::advance_frame() { ++current_frame; }
+void Pool::advance_frame() { ++current_frame; }//Progresses one frame through the genome.
 
-int32_t Pool::get_frame() { return current_frame; }
+int32_t Pool::get_frame() { return current_frame; }//Obtains the location of the current genome for futher analysis on the frame.
 
 bool Pool::save(ofstream &ofs) const {
+  //All information made during a session is saved onto an output file so that it maybe reloaded in a future session.
   ofs << innovation << "\n" << generation << "\n" << current_species << "\n"
       << current_genome << "\n" << current_frame << "\n" << max_fitness << "\n"
       << inputs << "\n" << outputs << "\n";
