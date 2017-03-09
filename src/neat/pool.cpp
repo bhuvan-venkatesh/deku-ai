@@ -155,19 +155,23 @@ void Pool::add_to_species(Genome child) {
 }
 
 void Pool::new_generation() {
+  //Notifies the user about the beginning of  new geenration
   std::cout << "1" << std::endl;
+  //Natural selection occurs: old, unfit species and their genomes die off while fit species remain.
   cull_species(false);
   remove_stale_species();
-  rank_globally();
-
+  
+  rank_globally();//The remaining species are sorted 
+    
+  //The average fitness is calculated for each species in the gneration for futher comparison.
   for (size_t s = 0; s != species.size(); ++s) {
     species[s].calculate_average_fitness();
   }
-
-  remove_weak_species();
+  remove_weak_species(); //Species with low fitness are removed to ensure a healthy fitnesses average for the species.
   int32_t sum = calculate_average_fitness();
   int added_species = 0;
-
+  /*For each species, a fitness ratio breed dictates how many children that species should yeild.
+  The greater the fitness ratio of the parent, the more children it produces.*/
   for (size_t j = 0; j != species.size(); ++j) {
     species[j].calculate_average_fitness();
     int32_t breed = int(species[j].average_fitness / sum * population);
@@ -176,26 +180,27 @@ void Pool::new_generation() {
       added_species++;
     }
   }
-
-  cull_species(true);
+    
+  cull_species(true);//The most recent species recieve corresponding genomes from the gneome stack.
   int temp = population - static_cast<int>(species.size());
+  //If there is a positive net growth in the species size, the number of noticable generations increases.
   if (temp < 0) {
     generation++;
     return;
   }
+  //To represent random mutations, additional children are created who may possess a highly desired genome.
   while (added_species++ < temp) {
     add_to_species(random_element(species).breed_child());
   }
-
-  generation++;
+  generation++;//A new generation has successful been created.
 }
 
 vector<bool> Pool::evaluate(const vector<int32_t> &inputs) {
-  //
   Species &current_spec = species[current_species];
   Genome &current_gen = current_spec.genomes[current_genome];
+  //A neural network is created.
   current_gen.generate_network();
-
+  //The network is then evaluted to determine which output is most optimal.
   return current_gen.evaluate(inputs);
 }
 
