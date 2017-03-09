@@ -205,7 +205,7 @@ void Pool::update_fitness(int32_t new_fitness) {
   }
 }
 
-void Pool::generate_top_network() { top_genome().generate_network(); }
+void Pool::generate_top_network() { top_genome().generate_network(); } //Produces a network of the top genomes to enforce survival of the fittest.
 
 Genome &Pool::top_genome() {
   return species[static_cast<size_t>(current_species)]
@@ -231,6 +231,7 @@ bool Pool::save(ofstream &ofs) const {
 }
 
 bool Pool::load(ifstream &ifs) {
+  //Inputs for a generation are extracted from an input file (recovers previous progress before the last termination)
   ifs >> innovation >> generation >> current_species >> current_genome >>
       current_frame >> max_fitness >> inputs >> outputs;
   size_t stuff;
@@ -250,10 +251,14 @@ bool Pool::load(ifstream &ifs) {
 }
 
 void Pool::set_top() {
+  //Determines the species and its genome with the greatest fitness.
   int32_t maxfitness = 0, maxs, maxg;
   size_t s_ = 0, g_ = 0;
+  //Scans through each of the species in the generation.
   for (auto s = species.begin(); s != species.end(); ++s, ++s_) {
+    //Scans through each genome in a particular species
     for (auto g = s->genomes.begin(); g != s->genomes.end(); ++g, ++g_) {
+      //Checks to see if there is a record fitness is exceeded, which is then updated.
       if (g->fitness > maxfitness) {
         maxfitness = g->fitness;
         maxs = s_;
@@ -261,7 +266,7 @@ void Pool::set_top() {
       }
     }
   }
-
+  //The species containing the genome of highest fitness is then naturally selected.
   current_species = maxs;
   current_genome = maxg;
   max_fitness = maxfitness;
@@ -269,16 +274,19 @@ void Pool::set_top() {
 }
 
 void Pool::next_genome() {
+  //A new generation is created if the number of species in the current pool is exceeded.
   if (current_species >= species.size()) {
     current_genome = 0;
     current_species = 0;
     new_generation();
   }
-
+  //Incrementation by one equates to viewing the next genome.
   current_genome++;
+  //A new species is created if the current genome number exceeds the size of a species's genome.
   if (current_genome >= species[current_species].genomes.size()) {
     current_genome = 0;
     current_species++;
+    //A new generation is created if the number of species in the current pool is exceeded.
     if (current_species >= species.size()) {
       current_species = 0;
       new_generation();
